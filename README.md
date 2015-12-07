@@ -393,7 +393,7 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-downloads]: https://img.shields.io/packagist/dt/m1/vars.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/m1/vars
-[link-travis]: https://travis-ci.org/m1/vars
+[link-travis]: https://travis-ci.org/m1/Vars
 [link-scrutinizer]: https://scrutinizer-ci.com/g/m1/vars/code-structure
 [link-code-quality]: https://scrutinizer-ci.com/g/m1/vars
 [link-downloads]: https://packagist.org/packages/m1/vars
