@@ -1,0 +1,7 @@
+/tests/mocks/cache/output
+.idea
+build
+composer.lock
+docs
+vendor
+output

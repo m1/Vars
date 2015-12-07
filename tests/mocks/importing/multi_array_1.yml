@@ -1,0 +1,4 @@
+test_key_1:
+  imports:
+    - {resource: multi_array_2.yml}
+    - {resource: multi_array_3.yml, relative: false}
