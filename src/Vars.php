@@ -19,6 +19,7 @@
 namespace M1\Vars;
 
 use M1\Vars\Cache\CacheProvider;
+use M1\Vars\Loader\LoaderProvider;
 use M1\Vars\Resource\AbstractResource;
 use M1\Vars\Resource\ResourceProvider;
 use M1\Vars\Resource\VariableResource;
@@ -45,13 +46,6 @@ class Vars extends AbstractResource
     public $cache;
 
     /**
-     * The available extensions
-     *
-     * @var array $extensions
-     */
-    private $extensions = array();
-
-    /**
      * The default options for Vars
      *
      * @var array $default_options
@@ -65,11 +59,11 @@ class Vars extends AbstractResource
     );
 
     /**
-     * The available loaders
+     * The loaderProvider for Vars supplies the file loaders and the extensions that are supported
      *
-     * @var array $loaders
+     * @var \M1\Vars\Loader\LoaderProvider $loader
      */
-    private $loaders = array();
+    public $loader;
 
     /**
      * Have the base and cache paths been set
@@ -105,7 +99,7 @@ class Vars extends AbstractResource
         $this->makePaths($options);
 
         if (!$this->cache->checkCache()) {
-            $this->makeLoaders($options);
+            $this->makeLoader($options);
             $this->makeVariables($options);
 
             $resource = new ResourceProvider($this, $resource);
@@ -132,25 +126,22 @@ class Vars extends AbstractResource
      */
     private function parseOptions(array $options)
     {
-        if (!$options) {
-            $parsed_options = $this->default_options;
-        } else {
-            $parsed_options = array_merge($this->default_options, $options);
+        $parsed_options = array_merge($this->default_options, $options);
 
-            if (isset($options['loaders'])) {
-                if (is_array($options['loaders']) && !empty($options['loaders'])) {
-                    $loaders = $options['loaders'];
-                } elseif (is_string($options['loaders'])) {
-                    $loaders[] = $options['loaders'];
-                } else {
-                    $loaders = $this->default_options['loaders'];
-                }
+        if (isset($options['loaders'])) {
+            $loaders = array();
 
+            if (is_array($options['loaders']) && !empty($options['loaders'])) {
+                $loaders = $options['loaders'];
+            } elseif (is_string($options['loaders'])) {
+                $loaders[] = $options['loaders'];
             } else {
                 $loaders = $this->default_options['loaders'];
             }
 
             $parsed_options['loaders'] = $loaders;
+        } else {
+            $parsed_options['loaders'] = $this->default_options['loaders'];
         }
 
         return $parsed_options;
@@ -164,7 +155,7 @@ class Vars extends AbstractResource
      */
     private function makeCache($options, $resource)
     {
-        $cache = new CacheProvider($resource, array_merge($this->default_options, $options));
+        $cache = new CacheProvider($resource, $options);
         $this->cache = $cache;
     }
 
@@ -185,63 +176,15 @@ class Vars extends AbstractResource
     }
 
     /**
-     * Get loaders and make extensions for the loaders
+     * Makes the LoaderProvider with the options
      *
-     * @param array|null $options The options being used for Vars
-     *
+     * @param array $options  The options being used for Vars
      */
-    private function makeLoaders($options)
+    private function makeLoader($options)
     {
-        $parsed_loaders = array();
-
-        foreach ($options['loaders'] as $loader) {
-            if ($loader === 'default') {
-                $parsed_loaders = array_merge($parsed_loaders, $this->default_options['loaders']);
-            } else {
-                $parsed_loaders[] = $loader;
-            }
-        }
-
-        $parsed_loaders = array_unique($parsed_loaders);
-
-        $this->loaders = $this->makeNameSpaceLoaders($parsed_loaders);
-        $this->extensions = $this->makeExtensions($this->loaders);
+        $loader = new LoaderProvider($options, $this->default_options['loaders']);
+        $this->loader = $loader;
     }
-
-    /**
-     * Makes namespace loaders from loader strings
-     *
-     * @param array $loaders The options being used for Vars
-     *
-     * @throws \InvalidArgumentException If a loader from options isn't found
-     * @throws \InvalidArgumentException If no loaders were loaded
-     *
-     * @return array The namespace loaders
-     */
-    private function makeNameSpaceLoaders($loaders)
-    {
-        $parsed_loaders = array();
-
-        foreach ($loaders as $loader) {
-            if (in_array($loader, $this->default_options['loaders'])) {
-                $loader = sprintf('%s\Loader\%sLoader', __NAMESPACE__, ucfirst(strtolower($loader)));
-            }
-
-            if (!class_exists($loader)) {
-                throw new \InvalidArgumentException(sprintf("'%s' loader class does not exist", $loader));
-            }
-
-            $parsed_loaders[] = $loader;
-        }
-
-
-        if (empty($parsed_loaders)) {
-            throw new \InvalidArgumentException('No loaders were loaded');
-        }
-
-        return $parsed_loaders;
-    }
-
     /**
      * Sets the replacement variables if the option has been set
      *
@@ -290,32 +233,6 @@ class Vars extends AbstractResource
     }
 
     /**
-     * Get and make extensions for loaders made from makeLoaders()
-     *
-     * @see \M1\Vars\Vars::makeLoaders() \M1\Vars\Vars::makeLoaders()
-     *
-     * @param  array $loaders File loaders
-     *
-     * @throws \RuntimeException If no loader extensions were found
-     *
-     * @return array File loader supported extensions
-     */
-    private function makeExtensions(array $loaders)
-    {
-        $extensions = array();
-
-        foreach ($loaders as $loader) {
-            $extensions = array_merge($extensions, $loader::$supported);
-        }
-
-        if (empty($extensions)) {
-            throw new \RuntimeException('No loader extensions were found');
-        }
-
-        return $extensions;
-    }
-
-    /**
      * Checks if the base and cache paths have been set, if not set then will use the $resource as the base path
      *
      * @param string $resource The resource to use to set the paths if they haven't been set
@@ -337,26 +254,6 @@ class Vars extends AbstractResource
 
             $this->paths_loaded = true;
         }
-    }
-
-    /**
-     * Get the Vars file loaders
-     *
-     * @return array The Vars file loaders
-     */
-    public function getLoaders()
-    {
-        return $this->loaders;
-    }
-
-    /**
-     * Get the Vars file loaders extensions
-     *
-     * @return array The Vars file loader extensions
-     */
-    public function getExtensions()
-    {
-        return $this->extensions;
     }
 
     /**

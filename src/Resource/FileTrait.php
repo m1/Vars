@@ -69,7 +69,7 @@ trait FileTrait
      */
     private function getSupportedLoader($data)
     {
-        $loaders = $this->vars->getLoaders();
+        $loaders = $this->vars->loader->getLoaders();
 
         foreach ($loaders as $loader) {
             $class_loader = new \ReflectionClass($loader);

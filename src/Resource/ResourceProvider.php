@@ -137,8 +137,8 @@ class ResourceProvider extends AbstractResource
     /**
      * Returns the supported files using the extensions from the loaders in the entity which is a directory
      *
-     * @see \M1\Vars\Vars::getExtensions() \M1\Vars\Vars::getExtensions()
-     * @see \M1\Vars\Vars::makeLoaders() \M1\Vars\Vars::makeLoaders()
+     * @see \M1\Vars\Loader\LoaderProvider::getExtensions() \M1\Vars\Loader\LoaderProvider::getExtensions()
+     * @see \M1\Vars\Loader\LoaderProvider::makeLoaders() \M1\Vars\Loader\LoaderProvider::makeLoaders()
      *
      * @return array|bool Returns the supported files or false if no files were found
      */
@@ -154,7 +154,7 @@ class ResourceProvider extends AbstractResource
 
         $supported_files = new \RegexIterator(
             $dir_files,
-            '/^.*\.('.implode('|', $this->vars->getExtensions()).')$/i'
+            '/^.*\.('.implode('|', $this->vars->loader->getExtensions()).')$/i'
         );
 
         $paths = array();

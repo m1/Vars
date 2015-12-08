@@ -353,7 +353,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertEquals($this->default_loaders_namespace, $vars->getLoaders());
+        $this->assertEquals($this->default_loaders_namespace, $vars->loader->getLoaders());
     }
 
     public function testDefaultLoadersWithEmptyLoaders()
@@ -366,7 +366,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertEquals($this->default_loaders_namespace, $vars->getLoaders());
+        $this->assertEquals($this->default_loaders_namespace, $vars->loader->getLoaders());
     }
 
     public function testDefaultLoaderString()
@@ -379,7 +379,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertEquals($this->default_loaders_namespace, $vars->getLoaders());
+        $this->assertEquals($this->default_loaders_namespace, $vars->loader->getLoaders());
     }
 
     public function testDefaultWithCustomLoaderArray()
@@ -404,7 +404,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertEquals($expected, $vars->getLoaders());
+        $this->assertEquals($expected, $vars->loader->getLoaders());
     }
 
     public function testBuiltInLoadersWithCustom()
@@ -424,7 +424,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertEquals($expected, $vars->getLoaders());
+        $this->assertEquals($expected, $vars->loader->getLoaders());
     }
 
     public function testSetOptions()
