@@ -18,6 +18,7 @@
 
 namespace M1\Vars;
 
+use M1\Vars\Cache\CacheProvider;
 use M1\Vars\Resource\AbstractResource;
 use M1\Vars\Resource\ResourceProvider;
 use M1\Vars\Resource\VariableResource;
@@ -37,53 +38,11 @@ class Vars extends AbstractResource
     private $base_path;
 
     /**
-     * The base path for the Vars config and cache folders
+     * The cache object if the cache is wanted, else false
      *
-     * @var boolean $cache
+     * @var \M1\Vars\Cache\CacheProvider $cache
      */
-    private $cache;
-
-    /**
-     * Has the cache been attempted
-     *
-     * @var bool $cache_attempted
-     */
-    private $cache_attempted = false;
-
-    /**
-     * How long for the cache to be fresh
-     *
-     * @var int $cache_expire
-     */
-    private $cache_expire;
-
-    /**
-     * Has the cache been loaded
-     *
-     * @var bool $cache_loaded
-     */
-    private $cache_loaded = false;
-
-    /**
-     * The cache file name
-     *
-     * @var string $cache_name
-     */
-    private $cache_name;
-
-    /**
-     * The specific path for the cache folder
-     *
-     * @var string $cache_path
-     */
-    private $cache_path;
-
-    /**
-     * If cached, the time when the class was cached
-     *
-     * @var int $cache_time
-     */
-    private $cache_time;
+    public $cache;
 
     /**
      * The available extensions
@@ -141,112 +100,60 @@ class Vars extends AbstractResource
      */
     public function __construct($resource, $options = null)
     {
-        $this->makePaths($options);
-        $this->makeCache($options, $resource);
+        if (!$options) {
+            $options = $this->default_options;
+        } else {
+            $options = array_merge($this->default_options, $options);
+        }
 
-        if (!$this->checkCache()) {
+        $this->makeCache($options, $resource);
+        $this->makePaths($options);
+
+        if (!$this->cache->checkCache()) {
             $this->makeLoaders($options);
             $this->makeVariables($options);
 
             $resource = new ResourceProvider($this, $resource);
         }
 
-        if ($this->cache_loaded) {
+        if ($this->cache->isHit()) {
             $this->loadFromCache();
         } else {
             $resource->mergeParentContent();
             $this->content = $resource->getContent();
 
-            if ($this->cache) {
-                $this->cache_time = time();
-                $cache_file = sprintf('%s/%s.php', $this->cache_path, $this->cache_name);
-                file_put_contents($cache_file, serialize($this));
-            }
+            $this->cache->setTime(time());
+            $this->cache->makeCache($this);
+
         }
     }
 
     /**
-     * Sets the base path if the options have been set and the cache path if the base path has been set
+     * Makes the CacheProvider with the options
      *
-     * @param array|null $options The options being used for Vars
-     */
-    private function makePaths($options)
-    {
-        $bp = false;
-        $cp = false;
-
-        if (isset($options['base_path']) && $options['base_path']) {
-            $bp = true;
-            $this->setBasePath($options['base_path']);
-        }
-
-        if (isset($options['cache_path']) && $options['cache_path']) {
-            $cp = true;
-            $this->setCachePath($options['cache_path']);
-        } elseif ($bp) {
-            $cp = true;
-            $this->setCachePath($options['base_path']);
-        }
-
-        if ($bp && $cp) {
-            $this->paths_loaded = true;
-        } elseif ($bp) {
-            $this->cache_path = false;
-        } elseif ($cp) {
-            $this->base_path = false;
-        }
-    }
-
-    /**
-     * Sets the cache options
-     *
-     * @param array|null   $options  The options being used for Vars
+     * @param array        $options  The options being used for Vars
      * @param array|string $resource The main configuration resource
      */
     private function makeCache($options, $resource)
     {
-        if (isset($options['cache'])) {
-            $cache = $options['cache'];
-        } else {
-            $cache = $this->default_options['cache'];
-        }
-
-        $cache_name = md5(serialize($resource));
-
-        if ($cache) {
-            if (isset($options['cache_expire']) && is_int($options['cache_expire'])) {
-                $this->cache_expire = $options['cache_expire'];
-            } else {
-                $this->cache_expire = $this->default_options['cache_expire'];
-            }
-
-        } else {
-            $this->cache_expire = false;
-        }
-
+        $cache = new CacheProvider($resource, array_merge($this->default_options, $options));
         $this->cache = $cache;
-        $this->cache_name = $cache_name;
     }
 
     /**
-     * Checks the cache to see if there is a valid cache available
+     * Sets the base path if the options have been set and the cache path if the cache path has not been set but the
+     * base path has
      *
-     * @return bool Returns true if has the cached resource
+     * @param array $options The options being used for Vars
      */
-    public function checkCache()
+    private function makePaths($options)
     {
-        if ($this->cache && $this->cache_path && !$this->cache_attempted) {
-            $file = sprintf('%s/%s.php', $this->cache_path, $this->cache_name);
-            $this->cache_attempted = true;
+        $this->setBasePath($options['base_path']);
 
-            if (is_file($file) &&
-                filemtime($file) >= (time() - $this->cache_expire)) {
-                    $this->cache_loaded = true;
-                    return true;
-            }
+        if (is_null($options['cache_path']) && !is_null($options['base_path'])) {
+            $this->cache->setPath($options['base_path']);
+            $this->paths_loaded = true;
         }
-
-        return false;
     }
 
     /**
@@ -330,14 +237,10 @@ class Vars extends AbstractResource
      */
     private function loadFromCache()
     {
-        $cached_file = sprintf('%s/%s.php', $this->cache_path, $this->cache_name);
-        $cached_config = unserialize(file_get_contents($cached_file));
+        $this->cache->load();
 
         $passed_keys = array(
             'base_path',
-            'cache_name',
-            'cache_path',
-            'cache_time',
             'content',
             'extensions',
             'loaders',
@@ -345,11 +248,15 @@ class Vars extends AbstractResource
             'variables',
         );
 
-        foreach (get_object_vars($cached_config) as $key => $value) {
+        $loaded_vars = get_object_vars($this->cache->getLoadedVars());
+
+        foreach ($loaded_vars as $key => $value) {
             if (in_array($key, $passed_keys)) {
                 $this->$key = $value;
             }
         }
+
+        $this->cache->setTime($loaded_vars['cache']->getTime());
     }
 
     /**
@@ -394,15 +301,8 @@ class Vars extends AbstractResource
                 $this->setBasePath($base_path);
             }
 
-            $cache = $this->getCache();
-            
-            if ($cache) {
-                $cache_path = $this->getCachePath();
-                
-                if (!$cache_path) {
-                    $cache_path = $base_path;
-                    $this->setCachePath($cache_path);
-                }
+            if ($this->cache->getProvide() && !$this->cache->getPath()) {
+                $this->cache->setPath($base_path);
             }
 
             $this->paths_loaded = true;
@@ -450,6 +350,10 @@ class Vars extends AbstractResource
      */
     public function setBasePath($base_path)
     {
+        if (is_null($base_path)) {
+            return;
+        }
+
         if (!is_dir($base_path)) {
             throw new \InvalidArgumentException(sprintf(
                 "'%s' base path does not exist or is not writable",
@@ -461,77 +365,7 @@ class Vars extends AbstractResource
         return $this;
     }
 
-    /**
-     * Returns if cache is on or off
-     *
-     * @return bool Is cache on or off
-     */
-    public function getCache()
-    {
-        return $this->cache;
-    }
 
-    /**
-     * Returns if the cache has been attempted
-     *
-     * @return bool Has the cache been attempted
-     */
-    public function getCacheAttempted()
-    {
-        return $this->cache_attempted;
-    }
-
-    /**
-     * Returns the cache path
-     *
-     * @return string The cache path
-     */
-    public function getCachePath()
-    {
-        return $this->cache_path;
-    }
-
-    /**
-     * Returns how long the cache lasts for
-     *
-     * @return int Cache expire time
-     */
-    public function getCacheExpire()
-    {
-        return $this->cache_expire;
-    }
-
-    /**
-     * Returns when the cache was made
-     *
-     * @return int Cache creation time
-     */
-    public function getCacheTime()
-    {
-        return $this->cache_time;
-    }
-
-    /**
-     * Sets the cache path
-     *
-     * @param string $cache_path The cache path to set
-     *
-     * @throws \InvalidArgumentException If the cache path does not exist or is not writable
-     *
-     * @return \M1\Vars\Vars
-     */
-    public function setCachePath($cache_path)
-    {
-        if (!is_dir($cache_path) || !is_writable($cache_path)) {
-            throw new \InvalidArgumentException(sprintf(
-                "'%s' cache path does not exist or is not writable",
-                $cache_path
-            ));
-        }
-
-        $this->cache_path = realpath($cache_path);
-        return $this;
-    }
 
     /**
      * Adds a resource to $this->resources
@@ -617,5 +451,15 @@ class Vars extends AbstractResource
     public function getVariables()
     {
         return $this->variables;
+    }
+
+    /**
+     * Returns the CacheProvider if set, if not return false
+     *
+     * @return \M1\Vars\Cache\CacheProvider|false The CacheProvider or false
+     */
+    public function getCache()
+    {
+        return $this->cache;
     }
 }

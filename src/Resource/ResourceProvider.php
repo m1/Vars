@@ -106,9 +106,7 @@ class ResourceProvider extends AbstractResource
                 if ($type === 'string') {
                     $this->vars->pathsLoadedCheck($resource);
 
-                    if ($this->vars->getCache() &&
-                        !$this->vars->getCacheAttempted() &&
-                        $this->vars->checkCache()) {
+                    if ($this->vars->cache->checkCache()) {
                         return;
                     }
 
