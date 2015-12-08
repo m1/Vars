@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<config>
-    <imports>
-        <resource>test_pass_2.xml</resource>
-    </imports>
-    <test_key_1>test_value_1</test_key_1>
-</config>

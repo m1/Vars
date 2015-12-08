@@ -1,7 +1,0 @@
-test_key_1:
-  imports:
-    - {resource: multi_array_2.yml, relative: yes}
-    - {resource: multi_array_3.yml, relative: True}
-    - {resource: relative_string_2.yml, relative: _WILL_DEFAULT_TO_TRUE_}
-    - {resource: relative_string_3.yml, relative: False}
-    - {resource: relative_string_4.yml, relative: no}

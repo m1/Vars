@@ -1,4 +1,0 @@
-imports:
-  resource: relative_resource_array_4.yml
-  relative: false
-test_key_3: test_value_3

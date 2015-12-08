@@ -1,6 +1,0 @@
-test_key_1:
-    imports:
-        relative: true
-        resource:
-            - relative_resource_array_2.yml
-            - relative_resource_array_3.yml
