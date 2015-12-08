@@ -217,11 +217,11 @@ class FileResource extends AbstractResource
         $content = $provider->getContent();
         $parent_content = $provider->getParentContent();
 
-        if ($content) {
+        if (!empty($content)) {
             $imported_resources = array_replace_recursive($imported_resources, $content);
         }
 
-        if ($parent_content) {
+        if (!empty($parent_content)) {
             $this->provider->addParentContent($parent_content);
         }
 
