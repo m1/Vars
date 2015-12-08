@@ -284,18 +284,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $vars->getContent());
     }
 
-    public function testBasicEmptyJson()
-    {
-        $vars = new Vars(
-            __DIR__ . '/mocks/basic/test_empty_1.json',
-            array(
-                'cache' => false,
-            )
-        );
-
-        $this->assertEquals(array(), $vars->getContent());
-    }
-
     public function testBasicEmptyToml()
     {
         $vars = new Vars(
@@ -899,19 +887,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     {
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.xml',
-            array(
-                'cache' => false,
-            )
-        );
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testBasicInvalidIni()
-    {
-        $vars = new Vars(
-            __DIR__ . '/mocks/basic/test_fail_1.ini',
             array(
                 'cache' => false,
             )
