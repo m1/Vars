@@ -44,7 +44,7 @@ class JsonLoader extends AbstractLoader
             $message = function_exists('json_last_error_msg') ? json_last_error_msg() : 'Parse error';
 
             throw new \RuntimeException(
-                sprintf("'%s' failed to load with the error '%s'", $this->file, json_last_error_msg())
+                sprintf("'%s' failed to load with the error '%s'", $this->file, $message)
             );
         }
 
