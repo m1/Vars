@@ -130,7 +130,7 @@ class CacheProvider
     /**
      * Transfer the contents of the parent Vars object into a file for cache
      *
-     * @param \M1\Vars\Vars $provide Does the cache want to be on or off
+     * @param \M1\Vars\Vars $vars Parent vars object
      */
     public function makeCache(Vars $vars)
     {
@@ -186,7 +186,7 @@ class CacheProvider
     /**
      * Sets the cache path
      *
-     * @param string $cache_path The cache path to set
+     * @param string $path The cache path to set
      *
      * @throws \InvalidArgumentException If the cache path does not exist or is not writable
      *

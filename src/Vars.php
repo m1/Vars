@@ -204,7 +204,7 @@ class Vars extends AbstractResource
             $namespaced_loaders[] = $loader;
         }
 
-        if (!$namespaced_loaders) {
+        if (empty($namespaced_loaders)) {
             throw new \InvalidArgumentException('No loaders were loaded');
         }
 
@@ -278,7 +278,7 @@ class Vars extends AbstractResource
             $extensions = array_merge($extensions, $loader::$supported);
         }
 
-        if (!$extensions) {
+        if (empty($extensions)) {
             throw new \RuntimeException('No loader extensions were found');
         }
 
