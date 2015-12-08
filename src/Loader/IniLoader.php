@@ -40,7 +40,7 @@ class IniLoader extends AbstractLoader
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf(
                 "%s threw an exception: %s",
-            $this->file,
+                $this->file,
                 $e
             ));
         }

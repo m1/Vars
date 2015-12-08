@@ -261,5 +261,4 @@ class CacheProvider
     {
         return $this->loaded_vars;
     }
-
 }
