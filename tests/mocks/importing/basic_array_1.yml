@@ -1,0 +1,4 @@
+test_key_1:
+  imports:
+    - multi_array_2.yml
+    - multi_array_3.yml

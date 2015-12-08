@@ -1,0 +1,4 @@
+imports:
+  resource: basic_3.yml
+  relative: false
+test_key_4: test_value_4
