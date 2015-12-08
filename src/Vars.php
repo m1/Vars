@@ -98,14 +98,9 @@ class Vars extends AbstractResource
      * @param string|array $resource The main configuration resource
      * @param array        $options  The options being used for Vars
      */
-    public function __construct($resource, $options = null)
+    public function __construct($resource, $options = array())
     {
-        if (!$options) {
-            $options = $this->default_options;
-        } else {
-            $options = array_merge($this->default_options, $options);
-        }
-
+        $options = $this->parseOptions($options);
         $this->makeCache($options, $resource);
         $this->makePaths($options);
 
@@ -126,6 +121,39 @@ class Vars extends AbstractResource
             $this->cache->makeCache($this);
 
         }
+    }
+
+    /**
+     * Parses the options so Vars can use them
+     *
+     * @param array $options  The options being used for Vars
+     *
+     * @return array The parsed options
+     */
+    private function parseOptions(array $options)
+    {
+        if (!$options) {
+            $parsed_options = $this->default_options;
+        } else {
+            $parsed_options = array_merge($this->default_options, $options);
+
+            if (isset($options['loaders'])) {
+                if (is_array($options['loaders']) && !empty($options['loaders'])) {
+                    $loaders = $options['loaders'];
+                } elseif (is_string($options['loaders'])) {
+                    $loaders[] = $options['loaders'];
+                } else {
+                    $loaders = $this->default_options['loaders'];
+                }
+
+            } else {
+                $loaders = $this->default_options['loaders'];
+            }
+
+            $parsed_options['loaders'] = $loaders;
+        }
+
+        return $parsed_options;
     }
 
     /**
@@ -161,37 +189,41 @@ class Vars extends AbstractResource
      *
      * @param array|null $options The options being used for Vars
      *
-     * @throws \InvalidArgumentException If a loader from options isn't found
-     * @throws \InvalidArgumentException If no loaders were loaded
      */
     private function makeLoaders($options)
     {
-        $loaders = array();
-        $default_loaders = $this->default_options['loaders'];
-
-        if (is_array($options['loaders']) && !empty($options['loaders'])) {
-            $loaders = $options['loaders'];
-        } elseif (is_string($options['loaders'])) {
-            $loaders[] = $options['loaders'];
-        } else {
-            $loaders = $default_loaders;
-        }
-
         $parsed_loaders = array();
 
-        foreach ($loaders as $loader) {
+        foreach ($options['loaders'] as $loader) {
             if ($loader === 'default') {
-                $parsed_loaders = array_merge($parsed_loaders, $default_loaders);
+                $parsed_loaders = array_merge($parsed_loaders, $this->default_options['loaders']);
             } else {
                 $parsed_loaders[] = $loader;
             }
         }
 
         $parsed_loaders = array_unique($parsed_loaders);
-        $namespaced_loaders = array();
 
-        foreach ($parsed_loaders as $loader) {
-            if (in_array($loader, $default_loaders)) {
+        $this->loaders = $this->makeNameSpaceLoaders($parsed_loaders);
+        $this->extensions = $this->makeExtensions($this->loaders);
+    }
+
+    /**
+     * Makes namespace loaders from loader strings
+     *
+     * @param array $loaders The options being used for Vars
+     *
+     * @throws \InvalidArgumentException If a loader from options isn't found
+     * @throws \InvalidArgumentException If no loaders were loaded
+     *
+     * @return array The namespace loaders
+     */
+    private function makeNameSpaceLoaders($loaders)
+    {
+        $parsed_loaders = array();
+
+        foreach ($loaders as $loader) {
+            if (in_array($loader, $this->default_options['loaders'])) {
                 $loader = sprintf('%s\Loader\%sLoader', __NAMESPACE__, ucfirst(strtolower($loader)));
             }
 
@@ -199,15 +231,15 @@ class Vars extends AbstractResource
                 throw new \InvalidArgumentException(sprintf("'%s' loader class does not exist", $loader));
             }
 
-            $namespaced_loaders[] = $loader;
+            $parsed_loaders[] = $loader;
         }
 
-        if (empty($namespaced_loaders)) {
+
+        if (empty($parsed_loaders)) {
             throw new \InvalidArgumentException('No loaders were loaded');
         }
 
-        $this->loaders = $namespaced_loaders;
-        $this->extensions = $this->makeExtensions($namespaced_loaders);
+        return $parsed_loaders;
     }
 
     /**

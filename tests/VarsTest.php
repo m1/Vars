@@ -12,6 +12,16 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             'test_key_1' => 'test_value_1',
             'test_key_2' => 'test_value_2',
         );
+
+        $this->default_loaders = array('ini', 'json', 'php', 'toml', 'yaml', 'xml',);
+        $this->default_loaders_namespace = array(
+            'M1\Vars\Loader\IniLoader',
+            'M1\Vars\Loader\JsonLoader',
+            'M1\Vars\Loader\PhpLoader',
+            'M1\Vars\Loader\TomlLoader',
+            'M1\Vars\Loader\YamlLoader',
+            'M1\Vars\Loader\XmlLoader',
+        );
     }
 
     public function testBasicValidYML()
@@ -333,16 +343,34 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->basic_array, $vars->getContent());
     }
 
+    public function testDefaultLoadersWithInvalidLoader()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/basic/test_pass_1.yml',
+            array(
+                'cache'   => false,
+                'loaders' => null,
+            )
+        );
+
+        $this->assertEquals($this->default_loaders_namespace, $vars->getLoaders());
+    }
+
+    public function testDefaultLoadersWithEmptyLoaders()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/basic/test_pass_1.yml',
+            array(
+                'cache'   => false,
+                'loaders' => array(),
+            )
+        );
+
+        $this->assertEquals($this->default_loaders_namespace, $vars->getLoaders());
+    }
+
     public function testDefaultLoaderString()
     {
-        $expected = array(
-            'M1\Vars\Loader\IniLoader',
-            'M1\Vars\Loader\JsonLoader',
-            'M1\Vars\Loader\PhpLoader',
-            'M1\Vars\Loader\TomlLoader',
-            'M1\Vars\Loader\YamlLoader',
-            'M1\Vars\Loader\XmlLoader',
-        );
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_pass_1.yml',
             array(
@@ -351,7 +379,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertEquals($expected, $vars->getLoaders());
+        $this->assertEquals($this->default_loaders_namespace, $vars->getLoaders());
     }
 
     public function testDefaultWithCustomLoaderArray()
