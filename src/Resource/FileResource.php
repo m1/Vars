@@ -69,7 +69,10 @@ class FileResource extends AbstractResource
 
         $content = $this->loadContent($this->file);
         $this->raw_content = $content;
-        $this->content = $this->searchForResources($content);
+
+        if ($content) {
+            $this->content = $this->searchForResources($content);
+        }
     }
 
     /**
@@ -100,25 +103,23 @@ class FileResource extends AbstractResource
      *
      * @return array Returns the parsed content
      */
-    private function searchForResources($content)
+    private function searchForResources($content = array())
     {
         $returned_content = array();
 
-        if (is_array($content)) {
-            foreach ($content as $ck => $cv) {
-                if ($ck === 'imports' && !is_null($cv) && !empty($cv)) {
-                    $imported_resource = $this->useImports($cv);
+        foreach ($content as $ck => $cv) {
+            if ($ck === 'imports' && !is_null($cv) && !empty($cv)) {
+                $imported_resource = $this->useImports($cv);
 
-                    if ($imported_resource) {
-                        $returned_content = array_replace_recursive($returned_content, $imported_resource);
-                    }
-
-                } elseif (is_array($cv)) {
-                    $returned_content[$ck] = $this->searchForResources($cv);
-                } else {
-                    $cv = strtr($cv, $this->vars->getVariables());
-                    $returned_content[$ck] = $cv;
+                if ($imported_resource) {
+                    $returned_content = array_replace_recursive($returned_content, $imported_resource);
                 }
+
+            } elseif (is_array($cv)) {
+                $returned_content[$ck] = $this->searchForResources($cv);
+            } else {
+                $cv = strtr($cv, $this->vars->getVariables());
+                $returned_content[$ck] = $cv;
             }
         }
 
