@@ -386,17 +386,17 @@ If you discover any security related issues, please email hello@milescroxford.co
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/m1/vars.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/m1/Vars.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/m1/vars/master.svg?style=flat-square
-[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/m1/vars.svg?style=flat-square
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/m1/vars.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/m1/vars.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/m1/Vars/master.svg?style=flat-square
+[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/m1/Vars.svg?style=flat-square
+[ico-code-quality]: https://img.shields.io/scrutinizer/g/m1/Vars.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/m1/Vars.svg?style=flat-square
 
-[link-packagist]: https://packagist.org/packages/m1/vars
+[link-packagist]: https://packagist.org/packages/m1/Vars
 [link-travis]: https://travis-ci.org/m1/Vars
-[link-scrutinizer]: https://scrutinizer-ci.com/g/m1/vars/code-structure
-[link-code-quality]: https://scrutinizer-ci.com/g/m1/vars
-[link-downloads]: https://packagist.org/packages/m1/vars
+[link-scrutinizer]: https://scrutinizer-ci.com/g/m1/Vars/code-structure
+[link-code-quality]: https://scrutinizer-ci.com/g/m1/Vars
+[link-downloads]: https://packagist.org/packages/m1/Vars
 [link-author]: https://github.com/m1
 [link-contributors]: ../../contributors
