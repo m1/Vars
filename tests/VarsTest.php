@@ -827,20 +827,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testNoLoaders()
-    {
-        $vars = new Vars(
-            __DIR__ . '/mocks/basic/test_pass_1.ini',
-            array(
-                'cache'   => false,
-                'loaders' => 1,
-            )
-        );
-    }
-
-    /**
      * @expectedException \RuntimeException
      */
     public function testNoLoaderExtensions()

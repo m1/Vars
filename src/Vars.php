@@ -169,12 +169,10 @@ class Vars extends AbstractResource
         $loaders = array();
         $default_loaders = $this->default_options['loaders'];
 
-        if (isset($options['loaders']) && !is_null($options['loaders']) && !empty($options['loaders'])) {
-            if (is_array($options['loaders'])) {
-                $loaders = $options['loaders'];
-            } elseif (is_string($options['loaders'])) {
-                $loaders[] = $options['loaders'];
-            }
+        if (is_array($options['loaders']) && !empty($options['loaders'])) {
+            $loaders = $options['loaders'];
+        } elseif (is_string($options['loaders'])) {
+            $loaders[] = $options['loaders'];
         } else {
             $loaders = $default_loaders;
         }
@@ -364,9 +362,7 @@ class Vars extends AbstractResource
         $this->base_path = realpath($base_path);
         return $this;
     }
-
-
-
+    
     /**
      * Adds a resource to $this->resources
      *
