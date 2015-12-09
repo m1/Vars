@@ -181,10 +181,10 @@ class FileResource extends AbstractResource
     }
 
     /**
-     * Processes the imports and gets individual imports and passes them off to import2Resources()
+     * Processes the import and gets individual import if set and passes them off to import2Resources()
      *
-     * @param mixed $imports The imports to be processed
-     * @param array $imported_resources The array of imported resourcesg
+     * @param mixed $import The import to be processed
+     * @param array $imported_resources The array of imported resources
      *
      * @return array The parsed imported resources
      */

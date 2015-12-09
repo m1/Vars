@@ -610,6 +610,48 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         unlink(sprintf('%s/%s', $cache_path, $cache_name));
     }
 
+    public function testCacheCheckInResourceProvider()
+    {
+        $expected = array(
+            'test_key_1' => 'test_value_1',
+            'test_key_2' => 'test_value_2',
+        );
+
+        $resource = __DIR__ . '/mocks/basic/test_pass_1.json';
+        $cache_name = sprintf('%s.php', md5(serialize($resource)));
+        $cache_path = __DIR__ . '/mocks/basic/';
+
+        $vars = new Vars(
+            $resource,
+            array(
+                'cache'      => true
+            )
+        );
+
+        $cache = $vars->getCache();
+        $this->assertInstanceOf('\M1\Vars\Cache\CacheProvider', $cache);
+
+        $output = $vars->getContent();
+        $cache_time = $cache->getTime();
+
+        $this->assertEquals($output, $vars->getContent());
+
+        $vars = new Vars(
+            $resource,
+            array(
+                'cache'      => true
+            )
+        );
+
+        $cache = $vars->getCache();
+        $this->assertInstanceOf('\M1\Vars\Cache\CacheProvider', $cache);
+
+        $this->assertEquals($output, $vars->getContent());
+        $this->assertEquals($cache_time, $cache->getTime());
+
+        unlink(sprintf('%s/%s', $cache_path, $cache_name));
+    }
+
     public function testCacheIsCreated()
     {
         $resource = __DIR__ . '/mocks/variables/basic_1.yml';

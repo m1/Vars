@@ -82,28 +82,15 @@ class ResourceProvider extends AbstractResource
      * Creates the content from the entity
      *
      * @param string|array $entity The configuration entity
-     *
-     * @throws \InvalidArgumentException If variable data is not array or a file
      */
     private function createContent($entity)
     {
         $type = gettype($entity);
-
-        if ($type === 'string') {
-            if (is_file($entity)) {
-                $resources[] = $entity;
-            } elseif (is_dir($entity)) {
-                $resources = $this->getSupportedFilesInDir();
-            } else {
-                throw new \InvalidArgumentException(sprintf("'%s' does not exist or is not readable", $entity));
-            }
-        } else {
-            $resources = $entity;
-        }
+        $resources = $this->processEntity($entity, $type);
 
         if ($resources && !empty($resources)) {
             foreach ($resources as $resource) {
-                if ($type === 'string') {
+                if ($type === "string") {
                     $this->vars->pathsLoadedCheck($resource);
 
                     if ($this->vars->cache->checkCache()) {
@@ -113,25 +100,57 @@ class ResourceProvider extends AbstractResource
                     if ($this->vars->resourceImported($resource)) {
                         continue;
                     }
-
                     $pos = $this->vars->addResource($resource);
                     $resource = new FileResource($this, $resource);
                     $this->vars->updateResource($resource, $pos);
-
                 } else {
                     $resource = new ResourceProvider($this->vars, $resource);
                 }
 
-                $content = $resource->getContent();
+                $this->addContent($resource->getContent());
+            }
+        }
+    }
 
-                if ($this->relative) {
-                    $this->content = $this->mergeContents($this->content, $content);
-                } else {
-                    $this->parent_content = $this->mergeContents($this->parent_content, $content);
-                }
+    /**
+     * Creates the content from the entity
+     *
+     * @param string|array $entity The configuration entity
+     * @param string       $type The type of entity
+     *
+     * @throws \InvalidArgumentException If the entity is not array|file, is readable or exists
+     *
+     * @returns array The array of resources
+     */
+    private function processEntity($entity, $type)
+    {
+        $resources = $entity;
+
+        if ($type === 'string') {
+            if (is_file($entity)) {
+                $resources = array($entity);
+            } elseif (is_dir($entity)) {
+                $resources = $this->getSupportedFilesInDir();
+            } else {
+                throw new \InvalidArgumentException(sprintf("'%s' does not exist or is not readable", $entity));
             }
         }
 
+        return $resources;
+    }
+
+    /**
+     * Adds content to the parent contents
+     *
+     * @param array $content The content from the resource
+     */
+    private function addContent($content)
+    {
+        if ($this->relative) {
+            $this->content = $this->mergeContents($this->content, $content);
+        } else {
+            $this->parent_content = $this->mergeContents($this->parent_content, $content);
+        }
     }
 
     /**

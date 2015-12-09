@@ -197,7 +197,7 @@ abstract class AbstractResource implements \ArrayAccess
         while (count($parts) > 1) {
             $part = array_shift($parts);
 
-            if (isset($array[$part]) and is_array($array[$part])) {
+            if (isset($array[$part]) && is_array($array[$part])) {
                 $array =& $array[$part];
             }
         }
