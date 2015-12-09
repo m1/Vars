@@ -524,6 +524,29 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $vars->getContent());
     }
 
+    public function testDoReplacementEnvironmentVariables()
+    {
+        $expected = array(
+            'test_key_1' => 'test_value_1_from_env',
+            'test_key_2' => 'test_value_2_from_env',
+            'test_key_3' => null,
+            'test_key_4' => null,
+        );
+
+
+        putenv("TEST_ENV_1=test_value_1_from_env");
+        putenv("TEST_ENV_2=test_value_2_from_env");
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/variables/env_1.yml',
+            array(
+                'cache'     => false,
+            )
+        );
+
+        $this->assertEquals($expected, $vars->getContent());
+    }
+
     public function testDoReplacementVariablesFromFile()
     {
         $expected = array(
@@ -606,6 +629,23 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         unlink(sprintf('%s/%s', $cache_path, $cache_name));
     }
 
+    public function testCachePathIsSet()
+    {
+        $resource = __DIR__ . '/mocks/variables/basic_1.yml';
+        $cache_name = sprintf('%s.php', md5(serialize($resource)));
+        $cache_path =  __DIR__ . '/mocks/variables';
+        $vars = new Vars(
+            $resource,
+            array(
+                'cache'      => true,
+            )
+        );
+
+        $this->assertTrue(is_file(sprintf('%s/%s', $cache_path, $cache_name)));
+        $this->assertEquals($cache_path, $vars->getCache()->getPath());
+
+        unlink(sprintf('%s/%s', $cache_path, $cache_name));
+    }
     public function testGetResourceContent()
     {
         $expected = array(
@@ -888,6 +928,20 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     {
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.yml',
+            array(
+                'cache' => false,
+            )
+        );
+    }
+
+    /**
+     * @requires PHP 5.5
+     * @expectedException \RuntimeException
+     */
+    public function testBasicInvalidIni()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/basic/test_fail_1.ini',
             array(
                 'cache' => false,
             )

@@ -1,0 +1,4 @@
+test_key_1: _ENV::TEST_ENV_1
+test_key_2: _ENV::TEST_ENV_2
+test_key_3: _ENV::NONE_EXISTANT
+test_key_4: _ENV::

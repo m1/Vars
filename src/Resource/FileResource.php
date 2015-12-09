@@ -33,6 +33,13 @@ class FileResource extends AbstractResource
     use FileTrait;
 
     /**
+     * The env separator for environment replacements
+     *
+     * @var string
+     */
+    private static $env_separator = '_ENV::';
+
+    /**
      * The filename of the loaded file
      *
      * @var string
@@ -118,12 +125,37 @@ class FileResource extends AbstractResource
             } elseif (is_array($cv)) {
                 $returned_content[$ck] = $this->searchForResources($cv);
             } else {
-                $cv = strtr($cv, $this->vars->getVariables());
-                $returned_content[$ck] = $cv;
+                $returned_content[$ck] = $this->parseText($cv);
             }
         }
 
         return $returned_content;
+    }
+
+    /**
+     * Parses the text for option and environment replacements and replaces the text
+     *
+     * @param string $text The text to be parsed
+     *
+     * @return string|null The parsed string
+     */
+    private function parseText($text)
+    {
+        if (substr($text, 0, 6) === self::$env_separator) {
+            $variable = trim(substr($text, strlen(self::$env_separator)));
+
+            if ($variable) {
+                $value = getenv($variable);
+
+                if ($value) {
+                    return $value;
+                }
+            }
+        } else {
+            return strtr($text, $this->vars->getVariables());
+        }
+
+        return null;
     }
 
     /**
@@ -142,18 +174,33 @@ class FileResource extends AbstractResource
         }
 
         foreach ($imports as $import) {
-            if (is_array($import) && array_key_exists('resource', $import) && is_array($import['resource'])) {
-                foreach ($import['resource'] as $resource) {
-                    $temp = array(
-                        'resource' => $resource,
-                        'relative' => $this->isRelative($import)
-                    );
+            $imported_resources = $this->processImport($import, $imported_resources);
+        }
 
-                    $imported_resources = $this->import2Resource($temp, $imported_resources);
-                }
-            } else {
-                $imported_resources = $this->import2Resource($import, $imported_resources);
+        return $imported_resources;
+    }
+
+    /**
+     * Processes the imports and gets individual imports and passes them off to import2Resources()
+     *
+     * @param mixed $imports The imports to be processed
+     * @param array $imported_resources The array of imported resourcesg
+     *
+     * @return array The parsed imported resources
+     */
+    private function processImport($import, array $imported_resources)
+    {
+        if (is_array($import) && array_key_exists('resource', $import) && is_array($import['resource'])) {
+            foreach ($import['resource'] as $resource) {
+                $temp = array(
+                    'resource' => $resource,
+                    'relative' => $this->isRelative($import)
+                );
+
+                $imported_resources = $this->import2Resource($temp, $imported_resources);
             }
+        } else {
+            $imported_resources = $this->import2Resource($import, $imported_resources);
         }
 
         return $imported_resources;

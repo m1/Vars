@@ -11,11 +11,11 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 --->
 
-Vars is a simple to use and easily extendable configuration loader with in built loaders for ini, json, PHP, toml, XML and yaml/yml file types. It also comes with in built support for Silex and more frameworks to come soon.
+Vars is a simple to use and easily extendable configuration loader with built-in loaders for INI, JSON, PHP, Toml, XML and YAML file types. It also comes built-in support for Silex and more frameworks (Symfony, Laravel etc) to come soon.
 
 ## Requirements
 
-Vars requires PHP version `5.3+` and if you want to use Yaml you'll need the `symfony/yaml` library and similarly you'll need `yosymfony/toml` to use Toml files
+Vars requires PHP version `5.3+` and if you want to use YAML you'll need the `symfony/yaml` library and similarly you'll need `yosymfony/toml` to use Toml files
 
 ## Install
 
@@ -242,7 +242,7 @@ Outputs:
 ]
 ```
 
-Your replacements must be prefix and suffixed with %
+Your replacements must be prefix and suffixed with `%`
 
 You can also load variables from files:
 ``` php
@@ -250,6 +250,38 @@ $vars = new Vars(__DIR__.'/config/config.yml', [
     'variables' => __DIR__.'/config/variables.yml'
 ]);
 ```
+
+#### Environment Variables
+
+You can also use environment variables to do replacements:
+
+``` yml
+test_key_1: _ENV::DATABASE_USERNAME
+test_key_2: _ENV::DATABASE_PASSWORD
+```
+
+``` nginx
+# nginx config example
+location @site {
+    fastcgi_pass unix:/var/run/php5-fpm.sock;
+    include fastcgi_params;
+    fastcgi_param  SCRIPT_FILENAME $document_root/index.php;
+
+    # env variables
+    fastcgi_param DATABASE_USERNAME test_username;
+    fastcgi_param DATABASE_PASSWORD test_password;
+}
+```
+
+Outputs:
+``` php
+[
+    "test_key_1" => "test_username",
+    "test_key_2" => "test_password"
+]
+```
+
+Your environment variables must be prefix with `_ENV::`
 
 #### Caching
 
