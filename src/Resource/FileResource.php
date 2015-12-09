@@ -115,23 +115,38 @@ class FileResource extends AbstractResource
         $returned_content = array();
 
         foreach ($content as $ck => $cv) {
-            if ($ck === 'imports' && !is_null($cv) && !empty($cv)) {
-                $imported_resource = $this->useImports($cv);
-
-                if ($imported_resource) {
-                    $returned_content = array_replace_recursive($returned_content, $imported_resource);
-                }
-
-            } elseif (is_array($cv)) {
-                $returned_content[$ck] = $this->searchForResources($cv);
-            } else {
-                $returned_content[$ck] = $this->parseText($cv);
-            }
+            $returned_content = $this->parseContent($ck, $cv, $returned_content);
         }
 
         return $returned_content;
     }
 
+    /**
+     * Parses the contents inside the content array
+     *
+     * @param mixed $key              The key of the content array
+     * @param mixed $value            The value of the key
+     * @param array $returned_content The modified content array to return
+     *
+     * @return array Returns the modified content array
+     */
+    private function parseContent($key, $value, $returned_content)
+    {
+        if ($key === 'imports' && !is_null($value) && !empty($value)) {
+            $imported_resource = $this->useImports($value);
+
+            if ($imported_resource) {
+                $returned_content = array_replace_recursive($returned_content, $imported_resource);
+            }
+
+        } elseif (is_array($value)) {
+            $returned_content[$key] = $this->searchForResources($value);
+        } else {
+            $returned_content[$key] = $this->parseText($value);
+        }
+
+        return $returned_content;
+    }
     /**
      * Parses the text for option and environment replacements and replaces the text
      *
@@ -297,24 +312,19 @@ class FileResource extends AbstractResource
      */
     public function isRelative($import)
     {
-        if (array_key_exists('relative', $import)) {
-            if (is_bool($import['relative'])) {
-                return $import['relative'];
+        $relative = (isset($import['relative'])) ? $import['relative'] : true;
 
-            } elseif (is_string($import['relative'])) {
-                switch (strtolower($import['relative'])) {
-                    case 'false':
-                    case 'no':
-                        return false;
-                    case 'true':
-                    case 'yes':
-                    default:
-                        return true;
-                }
-            }
+        switch (strtolower($relative)) {
+            case false:
+            case 'false':
+            case 'no':
+                return false;
+            case true:
+            case 'yes':
+            case 'true':
+            default:
+                return true;
         }
-
-        return true;
     }
 
     /**

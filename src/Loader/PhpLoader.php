@@ -37,14 +37,14 @@ class PhpLoader extends AbstractLoader
      */
     public function load()
     {
-        $content = require $this->file;
+        $content = require $this->entity;
 
         if (is_callable($content)) {
             $content = call_user_func($content);
         }
 
         if (!is_array($content)) {
-            throw new \RuntimeException(sprintf("'%s' does not return an array", $this->file));
+            throw new \RuntimeException(sprintf("'%s' does not return an array", $this->entity));
         }
 
         $this->content = $content;

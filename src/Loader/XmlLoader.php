@@ -38,11 +38,11 @@ class XmlLoader extends AbstractLoader
     public function load()
     {
         libxml_use_internal_errors(true);
-        $content = simplexml_load_file($this->file);
+        $content = simplexml_load_file($this->entity);
 
         if (!$content) {
             throw new \RuntimeException(
-                sprintf("'%s' failed to load with the error '%s'", $this->file, libxml_get_errors()[0]->message)
+                sprintf("'%s' failed to load with the error '%s'", $this->entity, libxml_get_errors()[0]->message)
             );
         }
 

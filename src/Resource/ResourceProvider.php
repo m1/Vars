@@ -18,6 +18,7 @@
 
 namespace M1\Vars\Resource;
 
+use M1\Vars\Loader\DirectoryLoader;
 use M1\Vars\Vars;
 
 /**
@@ -59,9 +60,9 @@ class ResourceProvider extends AbstractResource
     /**
      * The ResourceProvider constructor creates the content from the entity
      *
-     * @param \M1\Vars\Vars $vars       The calling Vars class
-     * @param string|array  $entity     The configuration entity
-     * @param bool          $relative   Is the entity relative to the calling entity or class
+     * @param \M1\Vars\Vars $vars     The calling Vars class
+     * @param string|array  $entity   The configuration entity
+     * @param bool          $relative Is the entity relative to the calling entity or class
      *
      * @throws \InvalidArgumentException If the entity passed is not a string or array
      */
@@ -116,7 +117,7 @@ class ResourceProvider extends AbstractResource
      * Creates the content from the entity
      *
      * @param string|array $entity The configuration entity
-     * @param string       $type The type of entity
+     * @param string       $type   The type of entity
      *
      * @throws \InvalidArgumentException If the entity is not array|file, is readable or exists
      *
@@ -163,38 +164,11 @@ class ResourceProvider extends AbstractResource
      */
     private function getSupportedFilesInDir()
     {
-        $dir_it = new \RecursiveDirectoryIterator($this->entity, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $dir_loader = new DirectoryLoader($this->entity);
+        $dir_loader->setSupports($this->vars->loader->getExtensions());
+        $dir_loader->load();
 
-        $dir_files = new \RecursiveIteratorIterator(
-            $dir_it,
-            \RecursiveIteratorIterator::LEAVES_ONLY,
-            \RecursiveIteratorIterator::CATCH_GET_CHILD
-        );
-
-        $supported_files = new \RegexIterator(
-            $dir_files,
-            '/^.*\.('.implode('|', $this->vars->loader->getExtensions()).')$/i'
-        );
-
-        $paths = array();
-
-        foreach ($supported_files as $path => $file) {
-            if ($file->isFile()) {
-                $paths[] = $path;
-            }
-        }
-
-        if ($paths && !empty($paths)) {
-            $resources = array();
-
-            foreach ($paths as $path) {
-                $resources[] = $path;
-            }
-
-            return $resources;
-        }
-
-        return false;
+        return $dir_loader->getContent();
     }
 
     /**

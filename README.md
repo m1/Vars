@@ -339,7 +339,7 @@ class TextLoader extends AbstractLoader
 
         $content = [];
 
-        foreach (file($this->file) as $line) {
+        foreach (file($this->entity) as $line) {
             list($key, $value) = explode(':', $line, 2);
             $content[trim($key)] = trim($value);
         }

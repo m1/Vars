@@ -185,6 +185,7 @@ class Vars extends AbstractResource
         $loader = new LoaderProvider($options, $this->default_options['loaders']);
         $this->loader = $loader;
     }
+
     /**
      * Sets the replacement variables if the option has been set
      *

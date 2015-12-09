@@ -40,10 +40,10 @@ class TomlLoader extends AbstractLoader
     public function load()
     {
         try {
-            $this->content = Toml::parse($this->file);
+            $this->content = Toml::parse($this->entity);
         } catch (\Exception $e) {
             throw new \RuntimeException(
-                sprintf("'%s' failed to load with the error '%s'", $this->file, $e)
+                sprintf("'%s' failed to load with the error '%s'", $this->entity, $e)
             );
         }
         return $this;

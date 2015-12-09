@@ -19,25 +19,25 @@
 namespace M1\Vars\Loader;
 
 /**
- * The abstract file loader for loaders to be based on
+ * The abstract loader for loaders to be based on
  *
  * @since 0.1.0
  */
 abstract class AbstractLoader
 {
     /**
-     * The content from the file
+     * The content from the entity
      *
      * @var mixed
      */
     protected $content;
 
     /**
-     * The passed file to be loaded
+     * The passed entity to be loaded
      *
      * @var string
      */
-    protected $file;
+    protected $entity;
 
     /**
      * The supported extensions
@@ -47,14 +47,21 @@ abstract class AbstractLoader
     public static $supported = array();
 
     /**
-     * Construct the file loader with the passed file
+     * Construct the loader with the passed entity
      *
-     * @param string $file The passed file
+     * @param string $entity The passed entity
      */
-    public function __construct($file)
+    public function __construct($entity)
     {
-        $this->file = $file;
+        $this->entity = $entity;
     }
+
+    /**
+     * The function what loads the content from the entity
+     *
+     * @return mixed
+     */
+    abstract public function load();
 
     /**
      * Checks whether the loader supports the file extension
@@ -63,12 +70,22 @@ abstract class AbstractLoader
      */
     public function supports()
     {
-        $extension = pathinfo($this->file, PATHINFO_EXTENSION);
+        $extension = pathinfo($this->entity, PATHINFO_EXTENSION);
         return in_array($extension, static::$supported);
     }
 
     /**
-     * Returns the file content
+     * Sets what the loader supports
+     *
+     * @param array $supports Set the extensions the loader supports
+     */
+    public function setSupports(array $supports)
+    {
+        static::$supported = $supports;
+    }
+
+    /**
+     * Returns the content
      *
      * @return mixed The content
      */
@@ -76,11 +93,4 @@ abstract class AbstractLoader
     {
         return $this->content;
     }
-
-    /**
-     * Hello load
-     *
-     * @return mixed
-     */
-    abstract public function load();
 }

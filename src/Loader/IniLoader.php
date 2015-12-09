@@ -36,11 +36,11 @@ class IniLoader extends AbstractLoader
     public function load()
     {
         try {
-            $this->content = parse_ini_file($this->file, true);
+            $this->content = parse_ini_file($this->entity, true);
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf(
                 "%s threw an exception: %s",
-                $this->file,
+                $this->entity,
                 $e
             ));
         }

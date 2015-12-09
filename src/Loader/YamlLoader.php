@@ -40,11 +40,11 @@ class YamlLoader extends AbstractLoader
     public function load()
     {
         try {
-            $this->content = Yaml::parse(file_get_contents($this->file));
+            $this->content = Yaml::parse(file_get_contents($this->entity));
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf(
                 "%s threw an exception: %s",
-                $this->file,
+                $this->entity,
                 $e
             ));
         }

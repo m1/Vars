@@ -37,13 +37,13 @@ class JsonLoader extends AbstractLoader
      */
     public function load()
     {
-        $content = json_decode(file_get_contents($this->file), true);
+        $content = json_decode(file_get_contents($this->entity), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $message = function_exists('json_last_error_msg') ? json_last_error_msg() : 'Parse error';
 
             throw new \RuntimeException(
-                sprintf("'%s' failed to load with the error '%s'", $this->file, $message)
+                sprintf("'%s' failed to load with the error '%s'", $this->entity, $message)
             );
         }
 
