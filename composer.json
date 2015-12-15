@@ -25,7 +25,8 @@
         "squizlabs/php_codesniffer": "^2.3",
         "symfony/yaml": "~2.7",
         "yosymfony/toml": "~0.3",
-        "silex/silex": "1.3.*"
+        "silex/silex": "1.3.*",
+        "m1/env": "~0.2"
     },
     "suggest": {
         "symfony/yaml": "~2.7",

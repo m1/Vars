@@ -11,11 +11,13 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 --->
 
-Vars is a simple to use and easily extendable configuration loader with built-in loaders for INI, JSON, PHP, Toml, XML and YAML file types. It also comes built-in support for Silex and more frameworks (Symfony, Laravel etc) to come soon.
+Vars is a simple to use and easily extendable configuration loader with built-in loaders for ENV, INI, JSON, PHP, Toml, XML and YAML file types. It also comes built-in support for Silex and more frameworks (Symfony, Laravel etc) to come soon.
 
 ## Requirements
 
-Vars requires PHP version `5.3+` and if you want to use YAML you'll need the `symfony/yaml` library and similarly you'll need `yosymfony/toml` to use Toml files
+Vars requires PHP version `5.3+`.
+
+If you want to use YAML you'll need the [`symfony/yaml`](https://github.com/symfony/yaml) library and similarly you'll need [`yosymfony/toml`](https://github.com/yosymfony/toml) to use Toml files and [`m1/env`](https://github.com/m1/env) to use Env files.
 
 ## Install
 
@@ -61,6 +63,14 @@ $vars->set('db.password', 'test')
 $vars['db.password'] = 'test';
 $vars['db']['password'] = 'test';
 ```
+
+You can also get the variables from `getenv()`
+``` php
+// All do the same thing
+$vars->toEnv();
+getenv('db.password');
+```
+For more info on this check the [Environment Variables](#Environment-Variables) section
 
 ### Importing
 
@@ -282,6 +292,25 @@ Outputs:
 ```
 
 Your environment variables must be prefix with `_ENV::`
+
+You can also make it so your config array is available to `getenv()`:
+
+```php
+$vars = new Vars(__DIR__.'/config/config.yml');
+$vars->toEnv();
+```
+
+*Note:* Your config will be flattened to a dot notation for this, e.g.:
+
+```yaml
+test_key_1:
+    test_key_2: value
+```
+
+Will be accessed by:
+```php
+getenv('test_key_1.test_key_2'); // value
+```
 
 #### Caching
 

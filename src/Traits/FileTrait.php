@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.1.0
+ * @version     0.2.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
  * @link        http://github.com/m1/vars/blob/master/README.MD Documentation
  */
 
-namespace M1\Vars\Resource;
+namespace M1\Vars\Traits;
 
 /**
  * File trait gives common operation functions needed for files in Vars
@@ -54,7 +54,9 @@ trait FileTrait
         }
 
         if (!is_readable($file)) {
+            // @codeCoverageIgnoreStart
             throw new \RuntimeException(sprintf("'%s' is not a readable file", $file));
+            // @codeCoverageIgnoreEnd
         }
     }
 

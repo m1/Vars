@@ -15,6 +15,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
         $this->default_loaders = array('ini', 'json', 'php', 'toml', 'yaml', 'xml',);
         $this->default_loaders_namespace = array(
+            'M1\Vars\Loader\EnvLoader',
             'M1\Vars\Loader\IniLoader',
             'M1\Vars\Loader\JsonLoader',
             'M1\Vars\Loader\PhpLoader',
@@ -100,6 +101,18 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     {
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_pass_1.ini',
+            array(
+                'cache' => false,
+            )
+        );
+
+        $this->assertEquals($this->basic_array, $vars->getContent());
+    }
+
+    public function testBasicValidEnv()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/basic/test_pass_1.env',
             array(
                 'cache' => false,
             )
@@ -306,6 +319,18 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $vars->getContent());
     }
 
+    public function testBasicEmptyEnv()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/basic/test_empty_1.env',
+            array(
+                'cache' => false,
+            )
+        );
+
+        $this->assertEquals(array(), $vars->getContent());
+    }
+
     public function testBasicEmptyDir()
     {
         $vars = new Vars(
@@ -386,6 +411,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     {
         $expected = array(
             'M1\Vars\Test\Plugin\TextLoader',
+            'M1\Vars\Loader\EnvLoader',
             'M1\Vars\Loader\IniLoader',
             'M1\Vars\Loader\JsonLoader',
             'M1\Vars\Loader\PhpLoader',
@@ -915,6 +941,28 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($app['vars']->getCache()->getProvide());
     }
 
+    public function testToEnvTransformer()
+    {
+        $expected = array(
+            "test_key_1.test_key_2" => "value",
+            "test_key_1.test_key_3" => "value",
+            "test_key_4" => "value"
+        );
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/env/test_1.yml',
+            array(
+                'cache' => false,
+            )
+        );
+
+        $vars->toEnv();
+        $this->assertEquals($expected, $vars->toDots());
+        $this->assertEquals("value", getenv('test_key_1.test_key_2'));
+        $this->assertEquals("value", getenv('test_key_1.test_key_3'));
+        $this->assertEquals("value", getenv('test_key_4'));
+    }
+
     /**
      * @expectedException \InvalidArgumentException
      */
@@ -1036,6 +1084,19 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     {
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.toml',
+            array(
+                'cache' => false,
+            )
+        );
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testBasicInvalidEnv()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/basic/test_fail_1.env',
             array(
                 'cache' => false,
             )

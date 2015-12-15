@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.1.0
+ * @version     0.2.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -23,6 +23,7 @@ use M1\Vars\Loader\LoaderProvider;
 use M1\Vars\Resource\AbstractResource;
 use M1\Vars\Resource\ResourceProvider;
 use M1\Vars\Resource\VariableResource;
+use M1\Vars\Traits\TransformerTrait;
 
 /**
  * Vars core class
@@ -31,6 +32,11 @@ use M1\Vars\Resource\VariableResource;
  */
 class Vars extends AbstractResource
 {
+    /**
+     * Used for to* functions
+     */
+    use TransformerTrait;
+
     /**
      * The base path for the Vars config and cache folders
      *
@@ -55,7 +61,7 @@ class Vars extends AbstractResource
         'cache' => true,
         'cache_path' => null,
         'cache_expire' => 300, // 5 minutes
-        'loaders' => array('ini', 'json', 'php', 'toml', 'yaml', 'xml',)
+        'loaders' => array('env', 'ini', 'json', 'php', 'toml', 'yaml', 'xml',)
     );
 
     /**
