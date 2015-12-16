@@ -152,8 +152,22 @@ test_key_1:
     imports: sub/
 ```
 
-Importing directories is by default recursive and will search folders within folders, there will be a toggle to change
-this in the near future.
+Importing directories is by default recursive and will search folders within folders, you can change this by adding a recursive toggle:
+``` yml
+test_key_1:
+    imports:
+        resource: sub/
+        recursive: false
+```
+As with the loading files, you can bulk import dirs with one recursive toggle:
+``` yml
+test_key_1:
+    imports:
+        recursive: false
+        resource:
+            - sub/
+            - sub1/
+```
 
 The importing of directories relies on loaders and the extensions supported by the loaders. See the loader section for more detail.
 
@@ -418,9 +432,168 @@ Then you can access your config from `$app['vars']`
 
 *Note: If you `$app['debug'] = true` then the cache will not be used.*
 
+## Public API
+* [Vars](#vars)
+    * [Constructor](#)
+    * [getContent](#)
+    * [getResource](#)
+    * [getResources](#)
+    * [toEnv](#)
+    * [toDots](#)
+    * [set](#)
+    * [get](#)
+* [FileResource](#fileresource)
+    * [getContent](#)
+    * [get](#)
+
+### Vars
+
+##### `Vars($resource, $options = array())`
+
+The constructor to create a new Vars config:
+
+``` php
+$vars = new Vars(__DIR__.'/config/config.yml', [
+    // this will affect how you getResource() and will  default to the path
+    // of the first resource you initiate
+    'base_path' => __DIR__.'/config',
+
+    // to cache or not -- defaults to true
+    'cache' => true,
+
+    // where the cache is stored -- If not set will default to the base path
+    'cache_path' => __DIR__./config/',
+
+    // How long the cache lasts for -- Defaults to 300 seconds (5 minutes)
+    'cache_expire' => 300,
+
+    // Replacement variables -- see variables section for more detail
+    'variables' => [
+        'foo' => 'bar',
+        'foobar' => 'barfoo'
+    ],
+
+    // The file loaders to load the configs -- see loader section for more detail
+    'loaders' => [
+        'default'
+    ]
+]);
+```
+
+##### `getContent()`
+
+Returns the parsed content of all the configs.
+
+##### `getResource($resource)`
+
+Get a specified resource, returns a file resource or false if resource doesn't exist.
+
+The `$resource` name is based on the path defined in base path and the filename.
+
+```yml
+# example.yml
+imports: example2.yml
+test_1: value
+
+# example2.yml
+test_2: value
+```
+
+```php
+$vars = new Vars('example.yml');
+$vars->getResource('example2.yml'); // FileResource
+
+$vars->getResource('example2.yml')->getContent();
+# output:
+# [
+#     "test_2" => "value"
+# ]
+```
+
+##### `getResources()`
+
+Returns all the resources imported, they will be `FileResource` objects.
+
+##### `toEnv()`
+
+Makes it so the config is available via `getenv()`:
+
+```php
+$vars = new Vars('example.yml');
+$vars->toEnv();
+
+getenv('test_1'); // value
+
+```
+
+##### `toDots()`
+
+Makes it so the config is flattened into a dot notation array
+
+```yml
+test_value_1:
+    test_value_2: value
+    test_value_3: value
+```
+
+```php
+$vars = new Vars('example.yml');
+$vars->toDots();
+# output:
+# [
+#     "test_value_1.test_value_2" => "value",
+#     "test_value_1.test_value_3" => "value
+# ]
+```
+
+##### `set($key, $value)`
+Set a config key:
+
+```php
+$vars = new Vars('example.yml');
+$vars->set('test_key_1', 'value_2');
+```
+
+##### `get($key)`
+Gets a config key:
+
+```php
+$vars = new Vars('example.yml');
+$vars->get('test_key_1'); // value
+```
+
+### FileResource
+
+##### `getRawContent()`
+
+Get the raw, unparsed content from the file
+
+```yml
+# example.yml
+test_value_1:
+    imports: example2.yml
+test_value_2: %root%/foo/%dir%
+```
+
+```php
+$vars = new Vars('example.yml');
+$vars->getResource('example.yml')->getRawContent();
+# output:
+# [
+#     test_value_1:
+#          imports: example2.yml
+#     test_value_2: %root%/foo/%dir%
+# ]
+```
+
+##### `get($key)`
+See [get()]
+
+##### `getContent()`
+See [getContet()]
+
 ## Todo
 
-- Add toggle for recursive searching when importing directories, see issue #
 - Add more providers (Symfony, Laravel, etc)
 
 ## Change log
