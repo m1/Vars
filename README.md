@@ -433,18 +433,19 @@ Then you can access your config from `$app['vars']`
 *Note: If you `$app['debug'] = true` then the cache will not be used.*
 
 ## Public API
-* [Vars](#vars)
-    * [Constructor](#)
-    * [getContent](#)
-    * [getResource](#)
-    * [getResources](#)
-    * [toEnv](#)
-    * [toDots](#)
-    * [set](#)
-    * [get](#)
+* [Vars](#vars-1)
+    * [Constructor](#varsresource-options--array)
+    * [getContent](#getcontent)
+    * [getResource](#getresourceresource)
+    * [getResources](#getresources)
+    * [toEnv](#toenv)
+    * [toDots](#todots)
+    * [set](#setkey-value)
+    * [get](#getkey)
 * [FileResource](#fileresource)
-    * [getContent](#)
-    * [get](#)
+    * [getRawContent](#getrawcontent)
+    * [getContent](#getcontent-1)
+    * [get](#getkey-1)
 
 ### Vars
 
@@ -484,6 +485,7 @@ $vars = new Vars(__DIR__.'/config/config.yml', [
 
 Returns the parsed content of all the configs.
 
+
 ##### `getResource($resource)`
 
 Get a specified resource, returns a file resource or false if resource doesn't exist.
@@ -510,9 +512,11 @@ $vars->getResource('example2.yml')->getContent();
 # ]
 ```
 
+
 ##### `getResources()`
 
 Returns all the resources imported, they will be `FileResource` objects.
+
 
 ##### `toEnv()`
 
@@ -525,6 +529,7 @@ $vars->toEnv();
 getenv('test_1'); // value
 
 ```
+
 
 ##### `toDots()`
 
@@ -546,6 +551,7 @@ $vars->toDots();
 # ]
 ```
 
+
 ##### `set($key, $value)`
 Set a config key:
 
@@ -553,6 +559,7 @@ Set a config key:
 $vars = new Vars('example.yml');
 $vars->set('test_key_1', 'value_2');
 ```
+
 
 ##### `get($key)`
 Gets a config key:
@@ -562,7 +569,9 @@ $vars = new Vars('example.yml');
 $vars->get('test_key_1'); // value
 ```
 
+
 ### FileResource
+
 
 ##### `getRawContent()`
 
@@ -586,11 +595,14 @@ $vars->getResource('example.yml')->getRawContent();
 # ]
 ```
 
-##### `get($key)`
-See [get()]
 
 ##### `getContent()`
-See [getContet()]
+See [getContent()](#getcontent)
+
+
+##### `get($key)`
+See [get()](#getkey)
+
 
 ## Todo
 
