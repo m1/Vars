@@ -2,6 +2,22 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 0.2.0 - 2015-12-16
+
+### Added
+- Add recursive dir toggle
+- Add support for .env file parsing via [`m1/env`](https://github.com/m1/env)
+- Add support for environment variable replacements
+- `toEnv()` function
+- `toDots()` function
+
+### Altered
+- Moved loader and extension logic to `LoaderProvider`
+
+### Fixed
+- Fixed few README.md links
+- Clean up `FileResource`
+
 ## 0.1.0 - 2015-12-07
 
 ### Added
