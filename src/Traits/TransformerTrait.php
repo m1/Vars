@@ -29,7 +29,8 @@ trait TransformerTrait
     /**
      * Makes it so the content is available in getenv()
      */
-    public function toEnv(){
+    public function toEnv()
+    {
         $dots = $this->toDots($this->content);
 
         foreach ($dots as $dot_k => $dot_v) {
@@ -70,5 +71,4 @@ trait TransformerTrait
 
         return $parsed;
     }
-
 }

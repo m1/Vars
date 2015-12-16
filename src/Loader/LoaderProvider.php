@@ -101,9 +101,12 @@ class LoaderProvider
             $parsed_loaders[] = $loader;
         }
 
+        // @codeCoverageIgnoreStart
         if (empty($parsed_loaders)) {
             throw new \InvalidArgumentException('No loaders were loaded');
         }
+        // @codeCoverageIgnoreEnd
+
 
         return $parsed_loaders;
     }

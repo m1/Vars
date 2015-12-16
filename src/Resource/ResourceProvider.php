@@ -44,6 +44,13 @@ class ResourceProvider extends AbstractResource
     private $parent_content = array();
 
     /**
+     * Are dirs wanting to be recursively searched
+     *
+     * @var bool
+     */
+    private $recursive;
+
+    /**
      * Is the import relative
      *
      * @var bool
@@ -60,13 +67,14 @@ class ResourceProvider extends AbstractResource
     /**
      * The ResourceProvider constructor creates the content from the entity
      *
-     * @param \M1\Vars\Vars $vars     The calling Vars class
-     * @param string|array  $entity   The configuration entity
-     * @param bool          $relative Is the entity relative to the calling entity or class
+     * @param \M1\Vars\Vars $vars      The calling Vars class
+     * @param string|array  $entity    The configuration entity
+     * @param bool          $relative  Is the entity relative to the calling entity or class
+     * @param bool          $recursive If entity a dir, do you want to recursively check directories
      *
      * @throws \InvalidArgumentException If the entity passed is not a string or array
      */
-    public function __construct(Vars $vars, $entity, $relative = true)
+    public function __construct(Vars $vars, $entity, $relative = true, $recursive = true)
     {
         if (!is_string($entity) && !is_array($entity)) {
             throw new \InvalidArgumentException('You can only pass strings or arrays as Resources');
@@ -75,6 +83,7 @@ class ResourceProvider extends AbstractResource
         $this->vars = $vars;
         $this->entity = $entity;
         $this->relative = $relative;
+        $this->recursive = $recursive;
 
         $this->createContent($entity);
     }
@@ -164,7 +173,7 @@ class ResourceProvider extends AbstractResource
      */
     private function getSupportedFilesInDir()
     {
-        $dir_loader = new DirectoryLoader($this->entity);
+        $dir_loader = new DirectoryLoader($this->entity, $this->recursive);
         $dir_loader->setSupports($this->vars->loader->getExtensions());
         $dir_loader->load();
 

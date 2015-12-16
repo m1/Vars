@@ -283,6 +283,21 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $vars->getContent());
     }
 
+    public function testImportDirImportingNonRecursive()
+    {
+        $expected = array(
+            'test_key_1' => 'test_value_1'
+        );
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/dir/recursive/test_1.yml',
+            array(
+                'cache' => false,
+            )
+        );
+        $this->assertEquals($expected, $vars->getContent());
+    }
+
     public function testBasicEmptyYml()
     {
         $vars = new Vars(
@@ -822,6 +837,10 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
         $vars['new_key_1'] = 'new_value_1';
         $this->assertEquals('new_value_1', $vars->get('new_key_1'));
+
+        $vars[null] = 'new_value_1';
+        $this->assertEquals('new_value_1', $vars->getContent());
+
     }
 
     public function testDotNotationVarsSet()

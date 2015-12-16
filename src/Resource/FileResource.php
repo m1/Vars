@@ -210,7 +210,8 @@ class FileResource extends AbstractResource
             foreach ($import['resource'] as $resource) {
                 $temp = array(
                     'resource' => $resource,
-                    'relative' => $this->isRelative($import)
+                    'relative' => $this->checkBooleanValue('relative', $import),
+                    'recursive' => $this->checkBooleanValue('recursive', $import),
                 );
 
                 $imported_resources = $this->import2Resource($temp, $imported_resources);
@@ -252,17 +253,18 @@ class FileResource extends AbstractResource
     {
         if (is_array($import) && array_key_exists('resource', $import)) {
             $import_resource = $import;
-            $import_resource['relative'] = $this->isRelative($import_resource);
+            $import_resource['relative'] = $this->checkBooleanValue('relative', $import_resource);
+            $import_resource['recursive'] = $this->checkBooleanValue('recursive', $import_resource);
+
         } elseif (is_string($import)) {
-            $import_resource = array('resource' => $import, 'relative' => true);
-        } else {
-            return false;
+            $import_resource = array('resource' => $import, 'relative' => true, 'recursive' => true);
         }
 
         $import_resource = new ResourceProvider(
             $this->provider->vars,
             sprintf('%s/%s', dirname($this->file), $import_resource['resource']),
-            $import_resource['relative']
+            $import_resource['relative'],
+            $import_resource['recursive']
         );
 
         return $import_resource;
@@ -305,17 +307,18 @@ class FileResource extends AbstractResource
     }
 
     /**
-     * Checks if the passed import is wanting to be merged into the parent content or relative content
+     * Checks if the passed boolean value is true or false
      *
-     * @param mixed $import The passed import
+     * @param string $value  The value to check
+     * @param mixed  $import The passed import
      *
-     * @return bool Returns whether wanting to be a relative import
+     * @return bool Returns the value of the boolean
      */
-    public function isRelative($import)
+    public function checkBooleanValue($value, $import)
     {
-        $relative = (isset($import['relative'])) ? $import['relative'] : true;
+        $value = (isset($import[$value])) ? $import[$value] : true;
 
-        switch (strtolower($relative)) {
+        switch (strtolower($value)) {
             case false:
             case 'false':
             case 'no':
