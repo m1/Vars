@@ -10,6 +10,7 @@ All Notable changes to `Vars` will be documented in this file
 - Add support for environment variable replacements
 - `toEnv()` function
 - `toDots()` function
+- API info to README
 
 ### Altered
 - Moved loader and extension logic to `LoaderProvider`
