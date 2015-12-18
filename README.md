@@ -22,6 +22,7 @@ Vars is a simple to use, lightweight and easily extendable configuration loader 
     * [Importing](#importing)
         * [Files](#importing-files)
         * [Directories](#importing-directories)
+        * [Flag options](#flag-options)
     * [Resources](#resources)
     * [Options](#options)
         * [Base Path](#base-path)
@@ -221,6 +222,27 @@ test_key_1:
 
 The importing of directories relies on loaders and the extensions supported by the loaders. See the loader section for more detail.
 
+#### Flag options
+
+You can use various flags when importing.
+
+The if else flag `?:` makes it so if the first file exists, use that -- else use the other defined file, eg:
+
+```yml
+imports: example_1.yml ?: example_2.yml
+```
+
+The suppress exceptions flag `@` -- suppresses files not found exceptions. eg:
+
+```yml
+imports: @file_does_not_exist.yml
+```
+
+You can also combine the above two flags, so if the else file option does not exist, it won't throw an exception, eg:
+
+```yml
+imports: example_1.yml ?: @example_2.yml
+```
 
 ### Resources
 
