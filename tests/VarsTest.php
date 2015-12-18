@@ -265,6 +265,76 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $vars->getContent());
     }
 
+    public function testImportStringSuppressException()
+    {
+        $expected = array();
+
+        $vars = new Vars(
+            '@'.__DIR__ . '/mocks/NONE.yml',
+            array(
+                'cache' => false,
+            )
+        );
+
+        $this->assertEquals($expected, $vars->getContent());
+    }
+
+    public function testImportStringIfElseBasic()
+    {
+        $expected = array('test_key_1' => 'test_value_1');
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/importing/ifelse_1.yml',
+            array(
+                'cache' => false,
+            )
+        );
+
+        $this->assertEquals($expected, $vars->getContent());
+    }
+
+    public function testImportStringIfElseElseResult()
+    {
+        $expected = array('test_key_2' => 'test_value_2');
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/importing/ifelse_2.yml',
+            array(
+                'cache' => false,
+            )
+        );
+
+        $this->assertEquals($expected, $vars->getContent());
+    }
+
+    public function testImportStringIfElseElseEmpty()
+    {
+        $expected = array('test_key_1' => 'test_value_1');
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/importing/ifelse_3.yml',
+            array(
+                'cache' => false,
+            )
+        );
+
+        $this->assertEquals($expected, $vars->getContent());
+    }
+
+    public function testImportStringIfElseSuppressElse()
+    {
+        $expected = array();
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/importing/ifelse_4.yml',
+            array(
+                'cache' => false,
+            )
+        );
+
+        $this->assertEquals($expected, $vars->getContent());
+    }
+
     public function testImportDirImporting()
     {
         $expected = array(
@@ -1142,6 +1212,19 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     {
         $vars = new Vars(
             __DIR__ . '/mocks/FILE_NON_EXISTENT.php',
+            array(
+                'cache' => false,
+            )
+        );
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testNonexistentImportedIfElseFile()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/importing/ifelse_5.yml',
             array(
                 'cache' => false,
             )

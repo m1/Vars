@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.2.0
+ * @version     0.3.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -19,6 +19,7 @@
 namespace M1\Vars\Resource;
 
 use M1\Vars\Traits\FileTrait;
+use M1\Vars\Traits\ResourceFlagsTrait;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -32,6 +33,8 @@ class FileResource extends AbstractResource
      * Basic file interaction logic
      */
     use FileTrait;
+
+    use ResourceFlagsTrait;
 
     /**
      * The env separator for environment replacements
@@ -262,12 +265,45 @@ class FileResource extends AbstractResource
 
         $import_resource = new ResourceProvider(
             $this->provider->vars,
-            sprintf('%s/%s', dirname($this->file), $import_resource['resource']),
+            $this->createImportName($import_resource['resource']),
             $import_resource['relative'],
             $import_resource['recursive']
         );
 
         return $import_resource;
+    }
+
+    /**
+     * Creates the correctly formatted resource name with paths
+     *
+     * @param string $resource The resource to create the import name for
+     *
+     * @return string The parsed resource
+     */
+    private function createImportName($resource)
+    {
+        $resource = $this->explodeResourceIfElse($resource);
+        $resource_pieces = array();
+        
+        foreach ($resource as $r) {
+            $suppress = false;
+
+            if ($this->checkSuppression($r)) {
+                $suppress = true;
+                $r = trim($r, "@");
+            }
+
+            $r = sprintf('%s/%s', dirname($this->file), $r);
+
+            if ($suppress) {
+                $r = "@".$r;
+            }
+
+            $resource_pieces[] = $r;
+        }
+
+        return $this->implodeResourceIfElse($resource_pieces);
+
     }
 
     /**

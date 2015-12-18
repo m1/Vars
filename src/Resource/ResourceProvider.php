@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.2.0
+ * @version     0.3.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -19,6 +19,7 @@
 namespace M1\Vars\Resource;
 
 use M1\Vars\Loader\DirectoryLoader;
+use M1\Vars\Traits\ResourceFlagsTrait;
 use M1\Vars\Vars;
 
 /**
@@ -28,6 +29,7 @@ use M1\Vars\Vars;
  */
 class ResourceProvider extends AbstractResource
 {
+    use ResourceFlagsTrait;
 
     /**
      * The configuration entity -- could be a file, array or dir
@@ -56,6 +58,13 @@ class ResourceProvider extends AbstractResource
      * @var bool
      */
     private $relative;
+
+    /**
+     * Suppress file not found exceptions
+     *
+     * @var bool
+     */
+    private $suppress_file_exceptions = false;
 
     /**
      * The parent Vars class
@@ -110,6 +119,7 @@ class ResourceProvider extends AbstractResource
                     if ($this->vars->resourceImported($resource)) {
                         continue;
                     }
+
                     $pos = $this->vars->addResource($resource);
                     $resource = new FileResource($this, $resource);
                     $this->vars->updateResource($resource, $pos);
@@ -137,16 +147,47 @@ class ResourceProvider extends AbstractResource
         $resources = $entity;
 
         if ($type === 'string') {
+            $entity = $this->parseEntity($entity);
+
             if (is_file($entity)) {
                 $resources = array($entity);
             } elseif (is_dir($entity)) {
                 $resources = $this->getSupportedFilesInDir();
+            } elseif ($this->suppress_file_exceptions) {
+                $resources = false;
             } else {
                 throw new \InvalidArgumentException(sprintf("'%s' does not exist or is not readable", $entity));
             }
         }
 
         return $resources;
+    }
+
+    /**
+     * Creates the content from the entity
+     *
+     * @param string $entity The configuration entity
+     *
+     * @returns string The parsed entity
+     */
+    private function parseEntity($entity)
+    {
+        $files = $this->explodeResourceIfElse($entity);
+
+        foreach ($files as $f) {
+            $this->suppress_file_exceptions = false;
+
+            if ($this->checkSuppression($f)) {
+                $f = trim($f, "@");
+                $this->suppress_file_exceptions = true;
+            }
+
+            if (file_exists($f) || !isset($files[1])) {
+                return $f;
+            }
+        }
+
+        return $f;
     }
 
     /**
