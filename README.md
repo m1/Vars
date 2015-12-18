@@ -11,7 +11,47 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 --->
 
-Vars is a simple to use and easily extendable configuration loader with built-in loaders for ENV, INI, JSON, PHP, Toml, XML and YAML file types. It also comes built-in support for Silex and more frameworks (Symfony, Laravel etc) to come soon.
+Vars is a simple to use, lightweight and easily extendable configuration loader with built-in loaders for ENV, INI, JSON, PHP, Toml, XML and YAML file types. It also comes built-in support for Silex with more frameworks (Symfony, Laravel etc) to come soon.
+
+* [Why?](#why)
+* [Requirements](#requirements)
+* [Install](#install)
+* [Usage](#usage)
+    * [Basic](#basic)
+    * [Accessing the config](#accessing-the-config)
+    * [Importing](#importing)
+        * [Files](#importing-files
+        * [Directories](#importing-directories)
+    * [Resources](#resources)
+    * [Options](#options)
+        * [Base Path](#base-path)
+        * [Variables](#variables)
+        * [Environment Variables](#environment-variables)
+        * [Caching](#caching)
+        * [Loaders](#loaders)
+    * [Providers](#providers)
+        * [Silex](#silex)
+    * [Public API](#public-api)
+        * [Vars](#vars-1)
+            * [Constructor](#varsresource-options--array)
+            * [getContent](#getcontent)
+            * [getResource](#getresourceresource)
+            * [getResources](#getresources)
+            * [toEnv](#toenv)
+            * [toDots](#todots)
+            * [set](#setkey-value)
+            * [get](#getkey)
+        * [FileResource](#fileresource)
+            * [getRawContent](#getrawcontent)
+            * [getContent](#getcontent-1)
+            * [get](#getkey-1)
+* [Todo](#todo)
+* [Change log](#change-log)
+* [Testing](#testing)
+* [Contributing](#Contributing)
+* [Security](#security)
+* [Credits](#credits)
+# [License](#license)
 
 ## Requirements
 
@@ -433,19 +473,6 @@ Then you can access your config from `$app['vars']`
 *Note: If you `$app['debug'] = true` then the cache will not be used.*
 
 ## Public API
-* [Vars](#vars-1)
-    * [Constructor](#varsresource-options--array)
-    * [getContent](#getcontent)
-    * [getResource](#getresourceresource)
-    * [getResources](#getresources)
-    * [toEnv](#toenv)
-    * [toDots](#todots)
-    * [set](#setkey-value)
-    * [get](#getkey)
-* [FileResource](#fileresource)
-    * [getRawContent](#getrawcontent)
-    * [getContent](#getcontent-1)
-    * [get](#getkey-1)
 
 ### Vars
 
