@@ -20,7 +20,7 @@ Vars is a simple to use, lightweight and easily extendable configuration loader 
     * [Basic](#basic)
     * [Accessing the config](#accessing-the-config)
     * [Importing](#importing)
-        * [Files](#importing-files
+        * [Files](#importing-files)
         * [Directories](#importing-directories)
     * [Resources](#resources)
     * [Options](#options)
@@ -51,7 +51,17 @@ Vars is a simple to use, lightweight and easily extendable configuration loader 
 * [Contributing](#Contributing)
 * [Security](#security)
 * [Credits](#credits)
-# [License](#license)
+* [License](#license)
+
+## Why?
+
+Sometimes you're forced to use different formats for config files and one of Vars aims is to make this simpler for you
+by supporting the most common config formats so you don't have to switch libraries to deal with the different formats.
+
+Another aim is to support different frameworks so again you don't have to switch libraries when dealing with different frameworks.
+Currently only supporting Silex with support for Laravel and Symfony to follow shortly.
+
+With a simple API and intuitive loading options, Vars tries to make config loading and providing as easy as possible for you.
 
 ## Requirements
 
