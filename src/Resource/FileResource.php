@@ -286,21 +286,6 @@ class FileResource extends AbstractResource
         $resource_pieces = array();
         
         foreach ($resource as $r) {
-            //$suppress = false;
-            //$recursive = false;
-            //
-            ////if ($this->checkSuppression($r)) {
-            ////    $suppress = true;
-            ////    $r = trim($r, "@");
-            ////}
-            ////
-            ////if ($this->checkRecursive($r)) {
-            ////    $recursive = true;
-            ////    $r = trim($r, "*");
-            ////}
-            ////
-            ////$r = $this->removeFlags($r);
-
             $parsed_r = $this->trimFlags($r);
             $parsed_r = sprintf('%s/%s', dirname($this->file), $parsed_r);
             $parsed_r = $this->replicateFlags($parsed_r, $r);
@@ -309,7 +294,6 @@ class FileResource extends AbstractResource
         }
 
         return $this->implodeResourceIfElse($resource_pieces);
-
     }
 
     /**

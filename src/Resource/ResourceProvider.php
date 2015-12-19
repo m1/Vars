@@ -174,21 +174,11 @@ class ResourceProvider extends AbstractResource
     private function parseEntity($entity)
     {
         $files = $this->explodeResourceIfElse($entity);
-        $recursive = $this->recursive;
 
         foreach ($files as $f) {
-            $this->suppress_file_exceptions = false;
-            $this->recursive = $recursive;
-
-            if ($this->checkSuppression($f)) {
-                $f = trim($f, "@");
-                $this->suppress_file_exceptions = true;
-            }
-
-            if ($this->checkRecursive($f)) {
-                $f = trim($f, "*");
-                $this->recursive = true;
-            }
+            $this->suppress_file_exceptions = $this->checkSuppression($f);
+            $this->recursive = $this->checkRecursive($f);
+            $f = $this->trimFlags($f);
 
             if (file_exists($f) || !isset($files[1])) {
                 return $f;

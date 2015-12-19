@@ -133,23 +133,7 @@ class Vars extends AbstractResource
     private function parseOptions(array $options)
     {
         $parsed_options = array_merge($this->default_options, $options);
-
-        if (isset($options['loaders'])) {
-            $loaders = array();
-
-            if (is_array($options['loaders']) && !empty($options['loaders'])) {
-                $loaders = $options['loaders'];
-            } elseif (is_string($options['loaders'])) {
-                $loaders[] = $options['loaders'];
-            } else {
-                $loaders = $this->default_options['loaders'];
-            }
-
-            $parsed_options['loaders'] = $loaders;
-        } else {
-            $parsed_options['loaders'] = $this->default_options['loaders'];
-        }
-
+        $parsed_options['loaders'] = (isset($options['loaders'])) ? $options['loaders'] : $this->default_options['loaders'];
         return $parsed_options;
     }
 

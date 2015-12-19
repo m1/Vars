@@ -350,8 +350,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     {
         $expected = array(
             'test_key_1' => array(
-                'test_key_2' => 'test_value_2',
-                'test_key_3' => 'test_value_3',
+                'test_key_2' => 'test_value_2'
             ),
         );
 

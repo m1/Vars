@@ -58,9 +58,10 @@ class LoaderProvider
      */
     private function makeLoaders($options, $default_loaders)
     {
+        $loaders = $this->preParseLoaders($options, $default_loaders);
         $parsed_loaders = array();
 
-        foreach ($options['loaders'] as $loader) {
+        foreach ($loaders as $loader) {
             if ($loader === 'default') {
                 $parsed_loaders = array_merge($parsed_loaders, $default_loaders);
             } else {
@@ -75,13 +76,35 @@ class LoaderProvider
     }
 
     /**
+     * Pre parse the loaders for use in make loaders
+     *
+     * @param array|null $options           The options being used for Vars
+     * @param array      $default_loaders   The default loaders for Vars
+     *
+     * @return array The pre parsed loaders
+     */
+    private function preParseLoaders($options, $default_loaders)
+    {
+        $loaders = array();
+
+        if (is_array($options['loaders']) && !empty($options['loaders'])) {
+            $loaders = $options['loaders'];
+        } elseif (is_string($options['loaders'])) {
+            $loaders[] = $options['loaders'];
+        } else {
+            $loaders = $default_loaders;
+        }
+
+        return $loaders;
+    }
+
+    /**
      * Makes namespace loaders from loader strings
      *
      * @param array $loaders The options being used for Vars
      * @param array      $default_loaders   The default loaders for Vars
      *
      * @throws \InvalidArgumentException If a loader from options isn't found
-     * @throws \InvalidArgumentException If no loaders were loaded
      *
      * @return array The namespace loaders
      */
@@ -100,13 +123,6 @@ class LoaderProvider
 
             $parsed_loaders[] = $loader;
         }
-
-        // @codeCoverageIgnoreStart
-        if (empty($parsed_loaders)) {
-            throw new \InvalidArgumentException('No loaders were loaded');
-        }
-        // @codeCoverageIgnoreEnd
-
 
         return $parsed_loaders;
     }
