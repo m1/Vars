@@ -23,6 +23,7 @@ use M1\Vars\Loader\LoaderProvider;
 use M1\Vars\Resource\AbstractResource;
 use M1\Vars\Resource\ResourceProvider;
 use M1\Vars\Resource\VariableResource;
+use M1\Vars\Traits\PathTrait;
 use M1\Vars\Traits\TransformerTrait;
 
 /**
@@ -33,16 +34,14 @@ use M1\Vars\Traits\TransformerTrait;
 class Vars extends AbstractResource
 {
     /**
+     * Used for path functions and variables
+     */
+    use PathTrait;
+
+    /**
      * Used for to* functions
      */
     use TransformerTrait;
-
-    /**
-     * The base path for the Vars config and cache folders
-     *
-     * @var string $base_path
-     */
-    private $base_path;
 
     /**
      * The cache object if the cache is wanted, else false
@@ -57,7 +56,7 @@ class Vars extends AbstractResource
      * @var array $default_options
      */
     private $default_options = array(
-        'base_path' => null,
+        'path' => null,
         'cache' => true,
         'cache_path' => null,
         'cache_expire' => 300, // 5 minutes
@@ -157,10 +156,11 @@ class Vars extends AbstractResource
      */
     private function makePaths($options)
     {
-        $this->setBasePath($options['base_path']);
+        $this->setPath($options['path']);
 
-        if (is_null($options['cache_path']) && !is_null($options['base_path'])) {
-            $this->cache->setPath($options['base_path']);
+        if (is_null($options['cache_path']) && !is_null($options['path'])) {
+
+            $this->cache->setPath($options['path']);
             $this->paths_loaded = true;
         }
     }
@@ -204,7 +204,7 @@ class Vars extends AbstractResource
         $this->cache->load();
 
         $passed_keys = array(
-            'base_path',
+            'path',
             'content',
             'extensions',
             'loaders',
@@ -231,58 +231,22 @@ class Vars extends AbstractResource
     public function pathsLoadedCheck($resource)
     {
         if (!$this->paths_loaded) {
-            $base_path = $this->getBasePath();
+            $path = $this->getPath();
 
-            if (!$base_path) {
+            if (!$path) {
                 $file = pathinfo(realpath($resource));
-                $base_path = $file['dirname'];
-                $this->setBasePath($base_path);
+                $path = $file['dirname'];
+                $this->setPath($path);
             }
 
             if ($this->cache->getProvide() && !$this->cache->getPath()) {
-                $this->cache->setPath($base_path);
+                $this->cache->setPath($path);
             }
 
             $this->paths_loaded = true;
         }
     }
 
-    /**
-     * Get the Vars base path
-     *
-     * @return string The Vars base path
-     */
-    public function getBasePath()
-    {
-        return $this->base_path;
-    }
-
-    /**
-     * Set the Vars base path
-     *
-     * @param string $base_path The base path to set
-     *
-     * @throws \InvalidArgumentException If the base path does not exist or is not writable
-     *
-     * @return \M1\Vars\Vars
-     */
-    public function setBasePath($base_path)
-    {
-        if (is_null($base_path)) {
-            return;
-        }
-
-        if (!is_dir($base_path)) {
-            throw new \InvalidArgumentException(sprintf(
-                "'%s' base path does not exist or is not writable",
-                $base_path
-            ));
-        }
-
-        $this->base_path = realpath($base_path);
-        return $this;
-    }
-    
     /**
      * Adds a resource to $this->resources
      *

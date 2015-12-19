@@ -83,7 +83,7 @@ class VarsServiceProvider implements ServiceProviderInterface
         $options = array();
 
         if (isset($app['vars.path'])) {
-            $options['base_path'] = $app['vars.path'];
+            $options['path'] = $app['vars.path'];
         }
 
         if (isset($app['vars.options'])) {

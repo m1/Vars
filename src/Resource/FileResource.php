@@ -95,7 +95,7 @@ class FileResource extends AbstractResource
     {
         $file = realpath($file);
 
-        $base_path = $this->provider->vars->getBasePath();
+        $base_path = $this->provider->vars->getPath();
 
         $filesystem = new Filesystem();
         $abs_path = $filesystem->makePathRelative(

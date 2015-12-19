@@ -18,6 +18,7 @@
 
 namespace M1\Vars\Cache;
 
+use M1\Vars\Traits\PathTrait;
 use M1\Vars\Vars;
 
 /**
@@ -27,6 +28,11 @@ use M1\Vars\Vars;
  */
 class CacheProvider
 {
+    /**
+     * Used for path functions and variables
+     */
+    use PathTrait;
+
     /**
      * Has the cache been attempted
      *
@@ -63,13 +69,6 @@ class CacheProvider
     private $name;
 
     /**
-     * The specific path for the cache folder
-     *
-     * @var string $path
-     */
-    private $path;
-
-    /**
      * Is the cache turned on
      *
      * @var boolean $provide
@@ -92,7 +91,7 @@ class CacheProvider
     public function __construct($resource, $options)
     {
         $this->setProvide($options['cache']);
-        $this->setPath($options['cache_path']);
+        $this->setPath($options['cache_path'], true);
 
         $this->expire = $options['cache_expire'];
         $this->name = md5(serialize($resource));
@@ -171,42 +170,6 @@ class CacheProvider
     public function getAttempted()
     {
         return $this->attempted;
-    }
-
-    /**
-     * Returns the cache path
-     *
-     * @return string The cache path
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * Sets the cache path
-     *
-     * @param string $path The cache path to set
-     *
-     * @throws \InvalidArgumentException If the cache path does not exist or is not writable
-     *
-     * @return \M1\Vars\Cache\CacheProvider
-     */
-    public function setPath($path)
-    {
-        if (is_null($path)) {
-            return;
-        }
-
-        if (!is_dir($path) || !is_writable($path)) {
-            throw new \InvalidArgumentException(sprintf(
-                "'%s' cache path does not exist or is not writable",
-                $path
-            ));
-        }
-
-        $this->path = realpath($path);
-        return $this;
     }
 
     /**

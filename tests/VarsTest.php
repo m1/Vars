@@ -580,7 +580,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     {
         $resource = __DIR__ . '/mocks/basic/test_pass_1.ini';
         $cache_name = sprintf('%s.php', md5(serialize($resource)));
-        $base_path = __DIR__ . '/mocks/cache';
+        $path = __DIR__ . '/mocks/cache';
         $cache_provide = true;
         $cache_path = __DIR__ . '/mocks/cache/output';
         $cache_expire = 1000;
@@ -588,7 +588,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $vars = new Vars(
             $resource,
             array(
-                'base_path'    => $base_path,
+                'path'    => $path,
                 'cache'        => $cache_provide,
                 'cache_path'   => $cache_path,
                 'cache_expire' => $cache_expire,
@@ -596,8 +596,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         );
 
         $cache = $vars->getCache();
-
-        $this->assertEquals($base_path, $vars->getBasePath());
 
         $this->assertInstanceOf('\M1\Vars\Cache\CacheProvider', $cache);
         $this->assertEquals($cache_provide, $cache->getProvide());
@@ -609,24 +607,24 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
     public function testSetBasePath()
     {
-        $base_path = __DIR__ . '/mocks/cache';
+        $path = __DIR__ . '/mocks/cache';
         $resource = __DIR__ . '/mocks/basic/test_pass_1.ini';
         $cache_name = sprintf('%s.php', md5(serialize($resource)));
 
         $vars = new Vars(
             $resource,
             array(
-                'base_path' => $base_path,
+                'path' => $path,
             )
         );
         $cache = $vars->getCache();
 
         $this->assertInstanceOf('\M1\Vars\Cache\CacheProvider', $cache);
 
-        $this->assertEquals($base_path, $vars->getBasePath());
-        $this->assertEquals($base_path, $cache->getPath());
+        $this->assertEquals($path, $vars->getPath());
+        $this->assertEquals($path, $cache->getPath());
 
-        unlink(sprintf('%s/%s', $base_path, $cache_name));
+        unlink(sprintf('%s/%s', $path, $cache_name));
     }
 
     public function testVariablesSet()
@@ -1021,7 +1019,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     {
         $resource = __DIR__ . '/mocks/basic/test_pass_1.yml';
         $cache_name = sprintf('%s.php', md5(serialize($resource)));
-        $base_path = __DIR__ . '/mocks/cache';
+        $path = __DIR__ . '/mocks/cache';
         $cache_provide = true;
         $cache_path = __DIR__ . '/mocks/cache/output';
         $cache_expire = 1000;
@@ -1031,7 +1029,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $app->register(
             new \M1\Vars\Provider\Silex\VarsServiceProvider($resource),
             array(
-                'vars.path'    => $base_path,
+                'vars.path'    => $path,
                 'vars.options' => array(
                     'cache'        => $cache_provide,
                     'cache_path'   => $cache_path,
@@ -1041,7 +1039,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals($this->basic_array, $app['vars']->getContent());
-        $this->assertEquals($base_path, $app['vars']->getBasePath());
+        $this->assertEquals($path, $app['vars']->getPath());
 
         $cache = $app['vars']->getCache();
         $this->assertInstanceOf('\M1\Vars\Cache\CacheProvider', $cache);
@@ -1303,7 +1301,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $vars = new Vars(
             __DIR__ . '/mocks/importing/dir_fail_1.yml',
             array(
-                'base_path' => __DIR__ . '/mocks/FOLDER_NON_EXISTENT',
+                'path' => __DIR__ . '/mocks/FOLDER_NON_EXISTENT',
                 'cache'     => false,
             )
         );
