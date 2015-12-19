@@ -61,6 +61,39 @@ trait ResourceFlagsTrait
     }
 
     /**
+     * Returns trimmed resource string
+     *
+     * @param string $resource The resource
+     *
+     * @return string The parsed string resource
+     */
+    protected function trimFlags($resource)
+    {
+        $resource = trim($resource, '@');
+        $resource = trim($resource, '*');
+
+        return $resource;
+    }
+
+    /**
+     * Duplicates the flags from one string to another
+     *
+     * @param string $resource The resource to add the flags to
+     * @param string $resource The resource to duplicate the flags from
+     *
+     * @return string The parsed string resource
+     */
+    protected function replicateFlags($resource, $original_resource)
+    {
+        return sprintf(
+            '%s%s%s',
+            ($this->checkSuppression($original_resource)) ? '@' : null,
+            $resource,
+            ($this->checkRecursive($original_resource)) ? '*' : null
+        );
+    }
+
+    /**
      * Checks to see if the recursive flag is set
      *
      * @param string $resource The resource

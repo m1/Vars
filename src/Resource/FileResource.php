@@ -286,30 +286,26 @@ class FileResource extends AbstractResource
         $resource_pieces = array();
         
         foreach ($resource as $r) {
-            $suppress = false;
-            $recursive = false;
+            //$suppress = false;
+            //$recursive = false;
+            //
+            ////if ($this->checkSuppression($r)) {
+            ////    $suppress = true;
+            ////    $r = trim($r, "@");
+            ////}
+            ////
+            ////if ($this->checkRecursive($r)) {
+            ////    $recursive = true;
+            ////    $r = trim($r, "*");
+            ////}
+            ////
+            ////$r = $this->removeFlags($r);
 
-            if ($this->checkSuppression($r)) {
-                $suppress = true;
-                $r = trim($r, "@");
-            }
-            
-            if ($this->checkRecursive($r)) {
-                $recursive = true;
-                $r = trim($r, "*");
-            }
+            $parsed_r = $this->trimFlags($r);
+            $parsed_r = sprintf('%s/%s', dirname($this->file), $parsed_r);
+            $parsed_r = $this->replicateFlags($parsed_r, $r);
 
-            $r = sprintf('%s/%s', dirname($this->file), $r);
-
-            if ($suppress) {
-                $r = "@".$r;
-            }
-
-            if ($recursive) {
-                $r = $r."*";
-            }
-
-            $resource_pieces[] = $r;
+            $resource_pieces[] = $parsed_r;
         }
 
         return $this->implodeResourceIfElse($resource_pieces);
@@ -367,23 +363,28 @@ class FileResource extends AbstractResource
         if ($value === 'relative') {
             $default = true;
         }
+
         $value = (isset($import[$value])) ? $import[$value] : $default;
 
-        switch (strtolower($value)) {
-            case false:
-            case 'false':
-            case 'no':
-                $value = false;
-                break;
-            case true:
-            case 'yes':
-            case 'true':
-            default:
-                $value = true;
-                break;
+        return $this->getBooleanValue($value);
+    }
+
+    /**
+     * Gets the boolean value from the string
+     *
+     * @param string $value  The value to check
+     *
+     * @return bool Returns the value of the boolean
+     */
+    private function getBooleanValue($value)
+    {
+        $value = strtolower($value);
+
+        if (!$value || $value === "false" || $value === "no") {
+            return false;
         }
 
-        return $value;
+        return true;
     }
 
     /**
