@@ -287,16 +287,26 @@ class FileResource extends AbstractResource
         
         foreach ($resource as $r) {
             $suppress = false;
+            $recursive = false;
 
             if ($this->checkSuppression($r)) {
                 $suppress = true;
                 $r = trim($r, "@");
+            }
+            
+            if ($this->checkRecursive($r)) {
+                $recursive = true;
+                $r = trim($r, "*");
             }
 
             $r = sprintf('%s/%s', dirname($this->file), $r);
 
             if ($suppress) {
                 $r = "@".$r;
+            }
+
+            if ($recursive) {
+                $r = $r."*";
             }
 
             $resource_pieces[] = $r;
@@ -352,7 +362,12 @@ class FileResource extends AbstractResource
      */
     public function checkBooleanValue($value, $import)
     {
-        $value = (isset($import[$value])) ? $import[$value] : true;
+        $default = false;
+
+        if ($value === 'relative') {
+            $default = true;
+        }
+        $value = (isset($import[$value])) ? $import[$value] : $default;
 
         switch (strtolower($value)) {
             case false:

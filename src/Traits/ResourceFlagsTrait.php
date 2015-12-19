@@ -61,6 +61,18 @@ trait ResourceFlagsTrait
     }
 
     /**
+     * Checks to see if the recursive flag is set
+     *
+     * @param string $resource The resource
+     *
+     * @return bool Is the recursive flag set
+     */
+    private function checkRecursive($resource)
+    {
+        return substr($resource, -1) === "*";
+    }
+
+    /**
      * Checks to see if the file not found exception is suppressed
      *
      * @param string $resource The resource

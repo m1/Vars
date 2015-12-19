@@ -167,6 +167,17 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $vars->getContent());
     }
 
+    public function testLoadSameFile()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/importing/same_1.yml',
+            array(
+                'cache' => false,
+            )
+        );
+        $this->assertTrue(count($vars->getResources()) === 1);
+    }
+
     public function testRelativeResourceArrayImporting()
     {
         $expected = array(
@@ -365,6 +376,34 @@ class VarsTest extends \PHPUnit_Framework_TestCase
                 'cache' => false,
             )
         );
+        $this->assertEquals($expected, $vars->getContent());
+    }
+
+    public function testImportDirImportingRecursiveFlag()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/dir/recursive/flag_1.yml',
+            array(
+                'cache' => false,
+            )
+        );
+        $this->assertEquals($this->basic_array, $vars->getContent());
+    }
+
+    public function testImportStringIfElseDirectory()
+    {
+        $expected = array(
+            'test_key_2' => 'test_value_2',
+            'test_key_3' => 'test_value_3',
+        );
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/importing/ifelse_dir_1.yml',
+            array(
+                'cache' => false,
+            )
+        );
+
         $this->assertEquals($expected, $vars->getContent());
     }
 

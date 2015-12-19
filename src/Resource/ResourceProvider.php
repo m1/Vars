@@ -83,7 +83,7 @@ class ResourceProvider extends AbstractResource
      *
      * @throws \InvalidArgumentException If the entity passed is not a string or array
      */
-    public function __construct(Vars $vars, $entity, $relative = true, $recursive = true)
+    public function __construct(Vars $vars, $entity, $relative = true, $recursive = false)
     {
         if (!is_string($entity) && !is_array($entity)) {
             throw new \InvalidArgumentException('You can only pass strings or arrays as Resources');
@@ -153,7 +153,7 @@ class ResourceProvider extends AbstractResource
             if (is_file($entity)) {
                 $resources = array($entity);
             } elseif (is_dir($entity)) {
-                $resources = $this->getSupportedFilesInDir();
+                $resources = $this->getSupportedFilesInDir($entity);
             } elseif ($this->suppress_file_exceptions) {
                 $resources = false;
             } else {
@@ -174,13 +174,20 @@ class ResourceProvider extends AbstractResource
     private function parseEntity($entity)
     {
         $files = $this->explodeResourceIfElse($entity);
+        $recursive = $this->recursive;
 
         foreach ($files as $f) {
             $this->suppress_file_exceptions = false;
+            $this->recursive = $recursive;
 
             if ($this->checkSuppression($f)) {
                 $f = trim($f, "@");
                 $this->suppress_file_exceptions = true;
+            }
+
+            if ($this->checkRecursive($f)) {
+                $f = trim($f, "*");
+                $this->recursive = true;
             }
 
             if (file_exists($f) || !isset($files[1])) {
@@ -211,11 +218,13 @@ class ResourceProvider extends AbstractResource
      * @see \M1\Vars\Loader\LoaderProvider::getExtensions() \M1\Vars\Loader\LoaderProvider::getExtensions()
      * @see \M1\Vars\Loader\LoaderProvider::makeLoaders() \M1\Vars\Loader\LoaderProvider::makeLoaders()
      *
+     * @param string $entity The resource entity
+     *
      * @return array|bool Returns the supported files or false if no files were found
      */
-    private function getSupportedFilesInDir()
+    private function getSupportedFilesInDir($entity)
     {
-        $dir_loader = new DirectoryLoader($this->entity, $this->recursive);
+        $dir_loader = new DirectoryLoader($entity, $this->recursive);
         $dir_loader->setSupports($this->vars->loader->getExtensions());
         $dir_loader->load();
 
