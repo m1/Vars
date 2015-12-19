@@ -93,42 +93,43 @@ class ResourceProvider extends AbstractResource
         $this->entity = $entity;
         $this->relative = $relative;
         $this->recursive = $recursive;
-
-        $this->createContent($entity);
-    }
-
-    /**
-     * Creates the content from the entity
-     *
-     * @param string|array $entity The configuration entity
-     */
-    private function createContent($entity)
-    {
         $type = gettype($entity);
+
         $resources = $this->processEntity($entity, $type);
 
         if ($resources && !empty($resources)) {
-            foreach ($resources as $resource) {
-                if ($type === "string") {
-                    $this->vars->pathsLoadedCheck($resource);
+            $this->createResources($resources, $type);
+        }
+    }
 
-                    if ($this->vars->cache->checkCache()) {
-                        return;
-                    }
+    /**
+     * Creates the FileResource|ResourceProvider from the resource
+     *
+     * @param array  $resources The array of resources
+     * @param string $type      The type of the resource
+     */
+    private function createResources(array $resources, $type)
+    {
+        foreach ($resources as $resource) {
+            if ($type === "string") {
+                $this->vars->pathsLoadedCheck($resource);
 
-                    if ($this->vars->resourceImported($resource)) {
-                        continue;
-                    }
-
-                    $pos = $this->vars->addResource($resource);
-                    $resource = new FileResource($this, $resource);
-                    $this->vars->updateResource($resource, $pos);
-                } else {
-                    $resource = new ResourceProvider($this->vars, $resource);
+                if ($this->vars->cache->checkCache()) {
+                    return;
                 }
 
-                $this->addContent($resource->getContent());
+                if ($this->vars->resourceImported($resource)) {
+                    continue;
+                }
+
+                $pos = $this->vars->addResource($resource);
+                $resource = new FileResource($this, $resource);
+                $this->vars->updateResource($resource, $pos);
+            } else {
+                $resource = new ResourceProvider($this->vars, $resource);
             }
+
+            $this->addContent($resource->getContent());
         }
     }
 
