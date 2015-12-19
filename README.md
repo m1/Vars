@@ -203,13 +203,21 @@ test_key_1:
     imports: sub/
 ```
 
-Importing directories is by default recursive and will search folders within folders, you can change this by adding a recursive toggle:
+Importing directories is by default not recursive and will not search folders within folders, you can change this by adding a recursive toggle:
 ``` yml
 test_key_1:
     imports:
         resource: sub/
-        recursive: false
+        recursive: true
 ```
+
+or by adding a recursive flag:
+``` yml
+test_key_1:
+    imports:
+        resource: sub/*
+```
+
 As with the loading files, you can bulk import dirs with one recursive toggle:
 ``` yml
 test_key_1:
@@ -238,7 +246,13 @@ The suppress exceptions flag `@` -- suppresses files not found exceptions. eg:
 imports: @file_does_not_exist.yml
 ```
 
-You can also combine the above two flags, so if the else file option does not exist, it won't throw an exception, eg:
+The recursive flag makes it so directories within directories are searched for files. eg:
+``` yml
+imports:
+    resource: sub/*
+```
+
+You can also combine the above flags, so if the else file option does not exist, it won't throw an exception, eg:
 
 ```yml
 imports: example_1.yml ?: @example_2.yml

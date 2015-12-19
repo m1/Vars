@@ -1,13 +1,28 @@
 <?php
+
 /**
- * Created by PhpStorm.
- * User: miles
- * Date: 19/12/15
- * Time: 11:32
+ * This file is part of the m1\vars library
+ *
+ * (c) m1 <hello@milescroxford.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @package     m1/vars
+ * @version     0.3.0
+ * @author      Miles Croxford <hello@milescroxford.com>
+ * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
+ * @license     http://github.com/m1/vars/blob/master/LICENSE
+ * @link        http://github.com/m1/vars/blob/master/README.MD Documentation
  */
 
 namespace M1\Vars\Traits;
 
+/**
+ * Path trait gives common operation functions needed for Paths in Vars
+ *
+ * @since 0.1.0
+ */
 trait PathTrait
 {
     /**
@@ -30,8 +45,9 @@ trait PathTrait
     /**
      * Set the Vars base path
      *
-     * @param string $path The  path to set
-     *
+     * @param string  $path            The  path to set
+     * @param boolean $check_writeable Check whether dir is writeable
+
      * @throws \InvalidArgumentException If the path does not exist or is not writable
      *
      * @return \M1\Vars\Vars

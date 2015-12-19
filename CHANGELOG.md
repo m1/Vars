@@ -2,6 +2,20 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 0.3.0 - 2015-12-19
+
+### Added
+- Add recursive dir toggle flag
+- Add suppression flag
+- Add if else flag
+- Add path trait
+
+### Altered
+- Moved path logic to path trait
+
+### Fixed
+- README format
+
 ## 0.2.0 - 2015-12-16
 
 ### Added

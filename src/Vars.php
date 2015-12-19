@@ -159,7 +159,6 @@ class Vars extends AbstractResource
         $this->setPath($options['path']);
 
         if (is_null($options['cache_path']) && !is_null($options['path'])) {
-
             $this->cache->setPath($options['path']);
             $this->paths_loaded = true;
         }
