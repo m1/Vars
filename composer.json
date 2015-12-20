@@ -3,7 +3,7 @@
     "description": "Vars is a simple to use and easily extendable configuration loader with in built loaders for ini, json, PHP, toml, XML and yaml/yml file types. It also comes with in built support for Silex and more frameworks to come soon.",
     "keywords": [
         "miles", "croxford", "vars", "config", "configuration", "loader", "json", "yml", "xml", "toml", "php", "ini",
-        "silex", "service", "provider"
+        "silex", "service", "provider", "pimple"
     ],
     "homepage": "https://github.com/m1/vars",
     "license": "MIT",
@@ -25,7 +25,9 @@
         "squizlabs/php_codesniffer": "^2.3",
         "symfony/yaml": "~2.7",
         "yosymfony/toml": "~0.3",
-        "silex/silex": "1.3.*",
+        "silex/silex": "~2.0@dev",
+        "silex/api": "~2.0@dev",
+        "silex/providers": "~2.0@dev",
         "m1/env": "~1.0"
     },
     "suggest": {
