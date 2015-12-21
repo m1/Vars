@@ -2,6 +2,11 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 0.3.2 - 2015-12-21
+
+### Fixed
+- Fixed composer.json
+
 ## 0.3.1 - 2015-12-21
 
 ### Altered

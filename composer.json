@@ -29,8 +29,9 @@
         "m1/env": "~1.0"
     },
     "suggest": {
-        "symfony/yaml": "~2.7",
-        "yosymfony/toml": "~0.3"
+        "m1/env": "For loading of Env files",
+        "symfony/yaml": "For loading of YAML files",
+        "yosymfony/toml": "For loading of Toml files"
     },
     "autoload": {
         "psr-4": {
