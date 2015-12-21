@@ -66,7 +66,7 @@ With a simple API and intuitive loading options, Vars tries to make config loadi
 
 ## Requirements
 
-Vars requires PHP version `5.3+`.
+Vars requires PHP version `5.5+`.
 
 If you want to use YAML you'll need the [`symfony/yaml`](https://github.com/symfony/yaml) library and similarly you'll need [`yosymfony/toml`](https://github.com/yosymfony/toml) to use Toml files and [`m1/env`](https://github.com/m1/env) to use Env files.
 
