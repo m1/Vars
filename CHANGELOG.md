@@ -2,6 +2,11 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 0.3.0 - 2015-12-21
+
+### Altered
+- Changed it so you need to use if else import flags in quotes
+
 ## 0.3.0 - 2015-12-19
 
 ### Added
