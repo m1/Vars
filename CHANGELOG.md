@@ -2,6 +2,11 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 0.4.0 - 2015-12-21
+
+### Altered
+- Made it so a folder is created inside the cache path for the cache file to be stored
+
 ## 0.3.2 - 2015-12-21
 
 ### Fixed
