@@ -237,8 +237,10 @@ You can use various flags when importing.
 The if else flag `?:` makes it so if the first file exists, use that -- else use the other defined file, eg:
 
 ```yml
-imports: example_1.yml ?: example_2.yml
+imports: "example_1.yml ?: example_2.yml"
 ```
+
+*Note: You need to wrap the string in quotes for the if else flag to work*
 
 The suppress exceptions flag `@` -- suppresses files not found exceptions. eg:
 
@@ -255,7 +257,7 @@ imports:
 You can also combine the above flags, so if the else file option does not exist, it won't throw an exception, eg:
 
 ```yml
-imports: example_1.yml ?: @example_2.yml
+imports: "example_1.yml ?: @example_2.yml"
 ```
 
 ### Resources
