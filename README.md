@@ -418,9 +418,13 @@ getenv('test_key_1.test_key_2'); // value
 
 Vars automatically caches the resources for 5 minutes, you can turn this off by setting the `cache` option to `false`.
 
-The `cache_path` if not set is set to what the `base_path` is set to.
+The `cache_path` if not set is set to what the `base_path` is set to. The `cache_path` must be writeable.
+
+To invalidate the cache, simply just remove the folder inside your `cache_path` called `vars`, eg: `rm -rf /var/www/application/app/cache/vars`
 
 The cache file is a .php file due to the extra speedup of opcache.
+
+If you're using the Silex provider, then the cache will not be used and set if you're in debug mode.
 
 #### Loaders
 

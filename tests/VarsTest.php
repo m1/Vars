@@ -602,7 +602,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($cache_path, $cache->getPath());
         $this->assertEquals($cache_expire, $cache->getExpire());
 
-        unlink(sprintf('%s/%s', $cache_path, $cache_name));
+        unlink(sprintf('%s/vars/%s', $cache_path, $cache_name));
     }
 
     public function testSetBasePath()
@@ -624,7 +624,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($path, $vars->getPath());
         $this->assertEquals($path, $cache->getPath());
 
-        unlink(sprintf('%s/%s', $path, $cache_name));
+        unlink(sprintf('%s/vars/%s', $path, $cache_name));
     }
 
     public function testVariablesSet()
@@ -754,7 +754,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($output, $vars->getContent());
         $this->assertEquals($cache_time, $cache->getTime());
 
-        unlink(sprintf('%s/%s', $cache_path, $cache_name));
+        unlink(sprintf('%s/vars/%s', $cache_path, $cache_name));
     }
 
     public function testCacheCheckInResourceProvider()
@@ -796,7 +796,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($output, $vars->getContent());
         $this->assertEquals($cache_time, $cache->getTime());
 
-        unlink(sprintf('%s/%s', $cache_path, $cache_name));
+        unlink(sprintf('%s/vars/%s', $cache_path, $cache_name));
     }
 
     public function testCacheIsCreated()
@@ -813,9 +813,9 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertTrue(is_file(sprintf('%s/%s', $cache_path, $cache_name)));
+        $this->assertTrue(is_file(sprintf('%s/vars/%s', $cache_path, $cache_name)));
 
-        unlink(sprintf('%s/%s', $cache_path, $cache_name));
+        unlink(sprintf('%s/vars/%s', $cache_path, $cache_name));
     }
 
     public function testCachePathIsSet()
@@ -830,10 +830,10 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertTrue(is_file(sprintf('%s/%s', $cache_path, $cache_name)));
+        $this->assertTrue(is_file(sprintf('%s/vars/%s', $cache_path, $cache_name)));
         $this->assertEquals($cache_path, $vars->getCache()->getPath());
 
-        unlink(sprintf('%s/%s', $cache_path, $cache_name));
+        unlink(sprintf('%s/vars/%s', $cache_path, $cache_name));
     }
     public function testGetResourceContent()
     {
@@ -1048,7 +1048,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($cache_path, $cache->getPath());
         $this->assertEquals($cache_expire, $cache->getExpire());
 
-        unlink(sprintf('%s/%s', $cache_path, $cache_name));
+        unlink(sprintf('%s/vars/%s', $cache_path, $cache_name));
     }
 
     public function testDebugSilexServiceProvider()

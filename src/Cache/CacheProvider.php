@@ -105,7 +105,7 @@ class CacheProvider
     public function checkCache()
     {
         if ($this->provide && $this->path && !$this->getAttempted()) {
-            $file = sprintf('%s/%s.php', $this->path, $this->name);
+            $file = sprintf('%s/vars/%s.php', $this->path, $this->name);
             $this->attempted = true;
 
             if (is_file($file) &&
@@ -122,7 +122,7 @@ class CacheProvider
      */
     public function load()
     {
-        $cached_file = sprintf('%s/%s.php', $this->path, $this->name);
+        $cached_file = sprintf('%s/vars/%s.php', $this->path, $this->name);
         $this->loaded_vars = unserialize(file_get_contents($cached_file));
     }
 
@@ -134,7 +134,12 @@ class CacheProvider
     public function makeCache(Vars $vars)
     {
         if ($this->provide) {
-            $cache_file = sprintf('%s/%s.php', $this->path, $this->name);
+            $cache_folder = sprintf("%s/vars", $this->path);
+            if (!file_exists($cache_folder)) {
+                mkdir($cache_folder, 0777, true);
+            }
+
+            $cache_file = sprintf('%s/%s.php', $cache_folder, $this->name);
             file_put_contents($cache_file, serialize($vars));
         }
     }
