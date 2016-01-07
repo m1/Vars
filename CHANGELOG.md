@@ -7,7 +7,7 @@ All Notable changes to `Vars` will be documented in this file
 ### Altered
 - Made it so a folder is created inside the cache path for the cache file to be stored
 
-## 0.4.0 - 2016-01-07
+## 0.5.0 - 2016-01-07
 
 ### Altered
 - Bumped package versions
