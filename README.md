@@ -25,7 +25,7 @@ Vars is a simple to use, lightweight and easily extendable configuration loader 
         * [Flag options](#flag-options)
     * [Resources](#resources)
     * [Options](#options)
-        * [Base Path](#base-path)
+        * [Path](#base-path)
         * [Variables](#variables)
         * [Environment Variables](#environment-variables)
         * [Caching](#caching)
@@ -278,13 +278,13 @@ There are various options for Vars
 $vars = new Vars(__DIR__.'/config/config.yml', [
     // this will affect how you getResource() and will  default to the path
     // of the first resource you initiate
-    'base_path' => __DIR__.'/config',
+    'path' => __DIR__.'/config',
 
     // to cache or not -- defaults to true
     'cache' => true,
 
     // where the cache is stored -- If not set will default to the base path
-    'cache_path' => __DIR__./config/',
+    'cache_path' => __DIR__.'/config/',
 
     // How long the cache lasts for -- Defaults to 300 seconds (5 minutes)
     'cache_expire' => 300,
@@ -304,9 +304,9 @@ $vars = new Vars(__DIR__.'/config/config.yml', [
 
 #### Base path
 
-The `base_path` is how the `$filename` in `$vars->getResource($filename)` is calculated. For example:
+The `path` is how the `$filename` in `$vars->getResource($filename)` is calculated. For example:
 
-If you set the `base_path` to `__DIR__.'/config'` and you imported `__DIR__.'/app/test_1.yml'`:
+If you set the `path` to `__DIR__.'/config'` and you imported `__DIR__.'/app/test_1.yml'`:
 ``` yml
 # example_1.yml
 imports: example_2.yml
@@ -314,7 +314,7 @@ imports: example_2.yml
 
 Then both the `example_1.yml` and `example_2.yml` `$filename` would be `../app/test_1.yml` and `../app/test_1.yml` respectively.
 
-If no `base_path` is set then the first file resource path will be used as the `base_path`, eg:
+If no `path` is set then the first file resource path will be used as the `path`, eg:
 
 ``` php
 // example 1
@@ -327,7 +327,7 @@ $vars = new Vars([
     ]);
 ```
 
-Will both use `__DIR__.'/config'` as the `base_path`
+Will both use `__DIR__.'/config'` as the `path`
 
 #### Variables
 
@@ -418,7 +418,7 @@ getenv('test_key_1.test_key_2'); // value
 
 Vars automatically caches the resources for 5 minutes, you can turn this off by setting the `cache` option to `false`.
 
-The `cache_path` if not set is set to what the `base_path` is set to. The `cache_path` must be writeable.
+The `cache_path` if not set is set to what the `path` is set to. The `cache_path` must be writeable.
 
 To invalidate the cache, simply just remove the folder inside your `cache_path` called `vars`, eg: `rm -rf /var/www/application/app/cache/vars`
 
@@ -536,13 +536,13 @@ The constructor to create a new Vars config:
 $vars = new Vars(__DIR__.'/config/config.yml', [
     // this will affect how you getResource() and will  default to the path
     // of the first resource you initiate
-    'base_path' => __DIR__.'/config',
+    'path' => __DIR__.'/config',
 
     // to cache or not -- defaults to true
     'cache' => true,
 
     // where the cache is stored -- If not set will default to the base path
-    'cache_path' => __DIR__./config/',
+    'cache_path' => __DIR__.'/config/',
 
     // How long the cache lasts for -- Defaults to 300 seconds (5 minutes)
     'cache_expire' => 300,

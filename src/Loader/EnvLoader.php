@@ -18,7 +18,7 @@
 
 namespace M1\Vars\Loader;
 
-use M1\Env\Env;
+use M1\Env\Parser;
 
 /**
  * The Env file loader
@@ -40,7 +40,7 @@ class EnvLoader extends AbstractLoader
     public function load()
     {
         try {
-            $this->content = Env::parse($this->entity);
+            $this->content = Parser::parse(file_get_contents($this->entity));
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf(
                 "%s threw an exception: %s",
