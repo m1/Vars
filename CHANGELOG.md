@@ -14,6 +14,11 @@ All Notable changes to `Vars` will be documented in this file
 - Moved over `EnvLoader` to use new api of [`m1/env`](https://github.com/m1/env)
 - Update README to remove typos
 
+## 0.4.0 - 2015-12-21
+
+### Altered
+- Made it so a folder is created inside the cache path for the cache file to be stored
+
 ## 0.3.2 - 2015-12-21
 
 ### Fixed
