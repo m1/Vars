@@ -524,6 +524,19 @@ Then you can access your config from `$app['vars']`
 
 *Note: If you `$app['debug'] = true` then the cache will not be used.*
 
+You can also access the config values from $app by using the dot notation, e.g:
+```yaml
+test_key_1:
+    test_key_2: value
+test_key_3: value
+```
+
+You can get the above using the dot notation like so:
+```php
+$app['vars.test_key_1.test_key_2']; // value
+$app['vars.test_key_3']; // value
+```
+
 ## Public API
 
 ### Vars

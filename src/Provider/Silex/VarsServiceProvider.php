@@ -29,6 +29,8 @@ use M1\Vars\Vars;
  */
 class VarsServiceProvider implements ServiceProviderInterface
 {
+    public $vars;
+
     /**
      * The entity to use Vars with
      *
@@ -69,6 +71,10 @@ class VarsServiceProvider implements ServiceProviderInterface
         $app['vars'] = function ($app) {
             return new Vars($this->entity, $this->createOptions($app));
         };
+
+        foreach ($app['vars']->toDots() as $key => $value) {
+            $app['vars.'.$key] = $value;
+        }
     }
 
     /**

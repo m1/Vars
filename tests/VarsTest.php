@@ -1012,7 +1012,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->assertEquals($this->basic_array, $app['vars']->getContent());
-
+        $this->assertEquals('test_value_1', $app['vars.test_key_1']);
     }
 
     public function testOptionsSilexServiceProvider()

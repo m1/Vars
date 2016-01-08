@@ -2,6 +2,11 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 0.6.0 - 2016-01-08
+
+### Added
+- Added dot notation access to `$app` for the Silex service provider
+
 ## 0.5.0 - 2016-01-07
 
 ### Altered
