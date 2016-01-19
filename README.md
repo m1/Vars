@@ -24,7 +24,7 @@ Vars is a simple to use, lightweight and easily extendable configuration loader 
     * [Options](#options)
         * [Path](#base-path)
         * [Variables](#variables)
-            * [Replacements](#replacement-variables)
+            * [Replacement Variables](#replacements-variables)
             * [In-file Variables](#in-file-variables)
             * [Environment Variables](#environment-variables)
         * [Caching](#caching)

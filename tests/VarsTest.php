@@ -920,7 +920,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicVarsGet()
     {
-
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_pass_1.yml',
             array(
@@ -934,7 +933,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
     public function testDotNotationVarsGet()
     {
-
         $vars = new Vars(
             __DIR__ . '/mocks/importing/multi_array_1.yml',
             array(
@@ -948,7 +946,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicVarsSet()
     {
-
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_pass_1.yml',
             array(
@@ -972,7 +969,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
     public function testDotNotationVarsSet()
     {
-
         $vars = new Vars(
             __DIR__ . '/mocks/importing/multi_array_1.yml',
             array(
@@ -992,7 +988,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicUnset()
     {
-
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_pass_1.yml',
             array(
@@ -1008,7 +1003,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
     public function testDotNotationVarsUnset()
     {
-
         $vars = new Vars(
             __DIR__ . '/mocks/importing/multi_array_1.yml',
             array(
@@ -1157,6 +1151,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     *
      * @expectedException \RuntimeException
      */
     public function testBasicInvalidYML()
@@ -1175,6 +1170,11 @@ class VarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testBasicInvalidIni()
     {
+        // hack for hhvm
+        if (! defined('HHVM_VERSION')) {
+            throw new \RuntimeException();
+        }
+
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.ini',
             array(

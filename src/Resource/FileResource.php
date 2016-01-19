@@ -151,7 +151,6 @@ class FileResource extends AbstractResource
             if ($imported_resource) {
                 $returned_content = array_replace_recursive($returned_content, $imported_resource);
             }
-
         } elseif (is_array($value)) {
             $returned_content[$key] = $this->searchForResources(
                 $value,
@@ -263,7 +262,6 @@ class FileResource extends AbstractResource
             $import_resource = $import;
             $import_resource['relative'] = $this->checkBooleanValue('relative', $import_resource);
             $import_resource['recursive'] = $this->checkBooleanValue('recursive', $import_resource);
-
         } elseif (is_string($import)) {
             $import_resource = array('resource' => $import, 'relative' => true, 'recursive' => true);
         }

@@ -77,7 +77,6 @@ abstract class AbstractResource implements \ArrayAccess
     public function get($key)
     {
         return $this->internalGet($this->content, $key);
-
     }
 
     /**
@@ -214,7 +213,6 @@ abstract class AbstractResource implements \ArrayAccess
      */
     public function arrayKeyExists($key)
     {
-
         if (array_key_exists($key, $this->content)) {
             return true;
         }

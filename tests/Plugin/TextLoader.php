@@ -10,7 +10,6 @@ class TextLoader extends AbstractLoader
 
     public function load()
     {
-
         $content = [];
 
         foreach (file($this->entity) as $line) {

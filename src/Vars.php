@@ -117,7 +117,6 @@ class Vars extends AbstractResource
 
             $this->cache->setTime(time());
             $this->cache->makeCache($this);
-
         }
     }
 

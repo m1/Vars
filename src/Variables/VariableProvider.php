@@ -94,7 +94,6 @@ class VariableProvider
         }
 
         return $value;
-
     }
 
     /**

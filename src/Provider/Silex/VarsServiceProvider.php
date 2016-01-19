@@ -69,7 +69,6 @@ class VarsServiceProvider implements ServiceProviderInterface
         $app['vars'] = function ($app) {
             return new Vars($this->entity, $this->createOptions($app));
         };
-
     }
 
     /**

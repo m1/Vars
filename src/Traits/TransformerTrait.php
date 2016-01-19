@@ -37,7 +37,6 @@ trait TransformerTrait
 
         foreach ($dots as $dot_k => $dot_v) {
             putenv(sprintf('%s=%s', $dot_k, $dot_v));
-
         }
     }
 

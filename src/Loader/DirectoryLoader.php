@@ -80,7 +80,6 @@ class DirectoryLoader extends AbstractLoader
      */
     private function getSupportedFiles()
     {
-
         $files = new \FilesystemIterator($this->entity);
 
         return $this->createRegexIterator($files);
