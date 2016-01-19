@@ -1171,8 +1171,9 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     public function testBasicInvalidIni()
     {
         // hack for hhvm
-        if (! defined('HHVM_VERSION')) {
+        if (defined('HHVM_VERSION')) {
             throw new \RuntimeException();
+            return;
         }
 
         $vars = new Vars(
