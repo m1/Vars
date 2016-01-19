@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.3.0
+ * @version     1.0.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -34,14 +34,10 @@ class FileResource extends AbstractResource
      */
     use FileTrait;
 
-    use ResourceFlagsTrait;
-
     /**
-     * The env separator for environment replacements
-     *
-     * @var string
+     * Enables the resource flags logic
      */
-    private static $env_separator = '_ENV::';
+    use ResourceFlagsTrait;
 
     /**
      * The filename of the loaded file
@@ -65,6 +61,13 @@ class FileResource extends AbstractResource
     private $raw_content = array();
 
     /**
+     * The VariableProvider
+     *
+     * @var \M1\Vars\Variables\VariableProvider
+     */
+    private $variables;
+
+    /**
      * The file resource constructor to get and parse the content from files
      *
      * @param \M1\Vars\Resource\ResourceProvider $provider The parent ResourceProvider
@@ -74,15 +77,18 @@ class FileResource extends AbstractResource
     {
         $this->provider = $provider;
         $this->vars = $provider->vars;
+        $this->variables = $this->vars->variables;
 
         $this->makePaths($file);
         $this->validate();
+
+        $store_prefix = $this->variables->vstore->getPrefix();
 
         $content = $this->loadContent($this->file);
         $this->raw_content = $content;
 
         if ($content) {
-            $this->content = $this->searchForResources($content);
+            $this->content = $this->searchForResources($content, $store_prefix);
         }
     }
 
@@ -110,16 +116,18 @@ class FileResource extends AbstractResource
     /**
      * Search for imports in the files and does the replacement variables
      *
-     * @param mixed $content The file content received from the loader
+     * @param mixed  $content The file content received from the loader
+     * @param string $prefix  The array prefix for the entity
      *
      * @return array Returns the parsed content
      */
-    private function searchForResources($content = array())
+    private function searchForResources($content = array(), $prefix = '')
     {
         $returned_content = array();
 
         foreach ($content as $ck => $cv) {
-            $returned_content = $this->parseContent($ck, $cv, $returned_content);
+            $this->variables->vstore->setCurrentPrefix($prefix);
+            $returned_content = $this->parseContent($ck, $cv, $returned_content, $prefix);
         }
 
         return $returned_content;
@@ -128,13 +136,14 @@ class FileResource extends AbstractResource
     /**
      * Parses the contents inside the content array
      *
-     * @param mixed $key              The key of the content array
-     * @param mixed $value            The value of the key
-     * @param array $returned_content The modified content array to return
+     * @param mixed  $key              The key of the content array
+     * @param mixed  $value            The value of the key
+     * @param array  $returned_content The modified content array to return
+     * @param string $prefix           The array prefix for the entity
      *
      * @return array Returns the modified content array
      */
-    private function parseContent($key, $value, $returned_content)
+    private function parseContent($key, $value, $returned_content, $prefix)
     {
         if ($key === 'imports' && !is_null($value) && !empty($value)) {
             $imported_resource = $this->useImports($value);
@@ -144,13 +153,19 @@ class FileResource extends AbstractResource
             }
 
         } elseif (is_array($value)) {
-            $returned_content[$key] = $this->searchForResources($value);
+            $returned_content[$key] = $this->searchForResources(
+                $value,
+                $this->variables->vstore->createPrefixName($prefix, $key)
+            );
         } else {
-            $returned_content[$key] = $this->parseText($value);
+            $value = $this->parseText($value);
+            $this->variables->vstore->set($prefix.$key, $value);
+            $returned_content[$key] = $value;
         }
 
         return $returned_content;
     }
+
     /**
      * Parses the text for option and environment replacements and replaces the text
      *
@@ -160,21 +175,11 @@ class FileResource extends AbstractResource
      */
     private function parseText($text)
     {
-        if (substr($text, 0, 6) === self::$env_separator) {
-            $variable = trim(substr($text, strlen(self::$env_separator)));
-
-            if ($variable) {
-                $value = getenv($variable);
-
-                if ($value) {
-                    return $value;
-                }
-            }
-        } else {
-            return strtr($text, $this->vars->getVariables());
+        if (is_string($text)) {
+            return $this->variables->parse($text);
         }
 
-        return null;
+        return $text;
     }
 
     /**
@@ -193,7 +198,7 @@ class FileResource extends AbstractResource
         }
 
         foreach ($imports as $import) {
-            $imported_resources = $this->processImport($import, $imported_resources);
+            $imported_resources = $this->processImport($this->parseText($import), $imported_resources);
         }
 
         return $imported_resources;

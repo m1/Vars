@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.3.0
+ * @version     1.0.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -130,6 +130,8 @@ class CacheProvider
      * Transfer the contents of the parent Vars object into a file for cache
      *
      * @param \M1\Vars\Vars $vars Parent vars object
+     *
+     * @codeCoverageIgnore
      */
     public function makeCache(Vars $vars)
     {

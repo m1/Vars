@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.3.0
+ * @version     1.0.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -17,6 +17,8 @@
  */
 
 namespace M1\Vars\Traits;
+
+use M1\Vars\Resource\InternalVariableResource;
 
 /**
  * Vars transformer class for to*() functions
@@ -31,7 +33,7 @@ trait TransformerTrait
      */
     public function toEnv()
     {
-        $dots = $this->toDots($this->content);
+        $dots = $this->toDots();
 
         foreach ($dots as $dot_k => $dot_v) {
             putenv(sprintf('%s=%s', $dot_k, $dot_v));
@@ -46,7 +48,7 @@ trait TransformerTrait
      */
     public function toDots()
     {
-        return $this->dotTransformer($this->content);
+        return (!is_null($this->content)) ? $this->dotTransformer($this->content) : $this->content;
     }
 
     /**

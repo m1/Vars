@@ -1,0 +1,5 @@
+imports: internal_2.yml
+test_import:
+  imports: internal_3.yml
+test_key_4: %$test_key_1.test_key_2%
+test_key_5: %$test_import.test_key_3%

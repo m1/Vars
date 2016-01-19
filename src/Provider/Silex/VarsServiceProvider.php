@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.3.0
+ * @version     1.0.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -29,8 +29,6 @@ use M1\Vars\Vars;
  */
 class VarsServiceProvider implements ServiceProviderInterface
 {
-    public $vars;
-
     /**
      * The entity to use Vars with
      *
@@ -48,7 +46,7 @@ class VarsServiceProvider implements ServiceProviderInterface
         'cache_path',
         'cache_expire',
         'loaders',
-        'variables'
+        'replacements'
     );
 
     /**
@@ -72,9 +70,6 @@ class VarsServiceProvider implements ServiceProviderInterface
             return new Vars($this->entity, $this->createOptions($app));
         };
 
-        foreach ($app['vars']->toDots() as $key => $value) {
-            $app['vars.'.$key] = $value;
-        }
     }
 
     /**
@@ -94,7 +89,6 @@ class VarsServiceProvider implements ServiceProviderInterface
 
         if (isset($app['vars.options'])) {
             $options = $this->createKeyedOptions($options, $app['vars.options']);
-
         }
 
         if (isset($app['debug']) && $app['debug']) {

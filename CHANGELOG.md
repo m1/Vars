@@ -2,6 +2,17 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 1.0.0 - 2016-01-19
+
+### Added
+- Added support for in-file variables
+
+### Altered
+- Syntax for all of the different variables for use in `vars`
+
+### Removed
+- Support for `$app['vars.key']` retrieval of keys
+
 ## 0.6.0 - 2016-01-08
 
 ### Added

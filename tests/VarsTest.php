@@ -630,22 +630,22 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     public function testVariablesSet()
     {
         $expected = array(
-            '%test_key_1%' => 'test_value_1',
-            '%test_key_2%' => 'test_value_2',
+            'test_key_1' => 'test_value_1',
+            'test_key_2' => 'test_value_2',
         );
 
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_pass_1.yml',
             array(
                 'cache'     => false,
-                'variables' => array(
+                'replacements' => array(
                     'test_key_1' => 'test_value_1',
                     'test_key_2' => 'test_value_2',
                 ),
             )
         );
 
-        $this->assertEquals($expected, $vars->getVariables());
+        $this->assertEquals($expected, $vars->variables->rstore->getContent());
     }
 
     public function testDoReplacementVariables()
@@ -660,7 +660,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             __DIR__ . '/mocks/variables/basic_1.yml',
             array(
                 'cache'     => false,
-                'variables' => array(
+                'replacements' => array(
                     'test_value_1'       => 'test_value_1_replaced',
                     'test_value_2'       => 'test_value_2_replaced',
                     'inline_replacement' => 'inline_replaced',
@@ -676,8 +676,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $expected = array(
             'test_key_1' => 'test_value_1_from_env',
             'test_key_2' => 'test_value_2_from_env',
-            'test_key_3' => null,
-            'test_key_4' => null,
         );
 
 
@@ -706,7 +704,30 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             __DIR__ . '/mocks/variables/basic_1.yml',
             array(
                 'cache'     => false,
-                'variables' => __DIR__ . '/mocks/variables/from_file_1.yml',
+                'replacements' => __DIR__ . '/mocks/variables/from_file_1.yml',
+            )
+        );
+
+        $this->assertEquals($expected, $vars->getContent());
+    }
+
+    public function testInternalVariables()
+    {
+        $expected = array(
+            "test_key_1" => array(
+                "test_key_2" => "test_value_1"
+            ),
+            "test_import" => array(
+                "test_key_3" => "test_value_2"
+            ),
+            "test_key_4" => "test_value_1",
+            "test_key_5" => "test_value_2"
+        );
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/variables/internal_1.yml',
+            array(
+                'cache'     => false
             )
         );
 
@@ -801,7 +822,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
     public function testCacheIsCreated()
     {
-        $resource = __DIR__ . '/mocks/variables/basic_1.yml';
+        $resource = __DIR__ . '/mocks/basic/test_pass_1.yml';
         $cache_name = sprintf('%s.php', md5(serialize($resource)));
         $cache_path = __DIR__ . '/mocks/cache/output';
 
@@ -820,9 +841,9 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
     public function testCachePathIsSet()
     {
-        $resource = __DIR__ . '/mocks/variables/basic_1.yml';
+        $resource = __DIR__ . '/mocks/basic/test_pass_1.yml';
         $cache_name = sprintf('%s.php', md5(serialize($resource)));
-        $cache_path =  __DIR__ . '/mocks/variables';
+        $cache_path =  __DIR__ . '/mocks/basic';
         $vars = new Vars(
             $resource,
             array(
@@ -870,7 +891,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
     public function testGetResourceNonExistent()
     {
         $vars = new Vars(
-            __DIR__ . '/mocks/variables/basic_1.yml',
+            __DIR__ . '/mocks/basic/test_pass_1.yml',
             array(
                 'cache' => false,
             )
@@ -1012,7 +1033,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->assertEquals($this->basic_array, $app['vars']->getContent());
-        $this->assertEquals('test_value_1', $app['vars.test_key_1']);
     }
 
     public function testOptionsSilexServiceProvider()
@@ -1330,7 +1350,20 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             __DIR__ . '/mocks/variables/basic_1.yml',
             array(
                 'cache'     => false,
-                'variables' => __DIR__ . '/mocks/FILE_NON_EXISTENT',
+                'replacements' => __DIR__ . '/mocks/FILE_NON_EXISTENT',
+            )
+        );
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testNonExistentVariable()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/variables/fail_1.yml',
+            array(
+                'cache'     => false,
             )
         );
     }

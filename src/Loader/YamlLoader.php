@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.3.0
+ * @version     1.0.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -48,6 +48,7 @@ class YamlLoader extends AbstractLoader
                 $e
             ));
         }
+
         return $this;
     }
 }

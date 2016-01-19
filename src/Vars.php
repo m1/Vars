@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.3.0
+ * @version     1.0.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -22,9 +22,9 @@ use M1\Vars\Cache\CacheProvider;
 use M1\Vars\Loader\LoaderProvider;
 use M1\Vars\Resource\AbstractResource;
 use M1\Vars\Resource\ResourceProvider;
-use M1\Vars\Resource\VariableResource;
 use M1\Vars\Traits\PathTrait;
 use M1\Vars\Traits\TransformerTrait;
+use M1\Vars\Variables\VariableProvider;
 
 /**
  * Vars core class
@@ -85,11 +85,11 @@ class Vars extends AbstractResource
     private $resources = array();
 
     /**
-     * The words to be replaced in the config files
+     * The variable provider
      *
-     * @var array $variables
+     * @var \M1\Vars\Variables\VariableProvider $variables
      */
-    private $variables = array();
+    public $variables;
 
     /**
      * Creates a new instance of Vars
@@ -102,7 +102,6 @@ class Vars extends AbstractResource
         $options = $this->parseOptions($options);
         $this->makeCache($options, $resource);
         $this->makePaths($options);
-
         if (!$this->cache->checkCache()) {
             $this->makeLoader($options);
             $this->makeVariables($options);
@@ -182,16 +181,10 @@ class Vars extends AbstractResource
      */
     private function makeVariables($options)
     {
-        if (isset($options['variables'])) {
-            $variables = new VariableResource($this, $options['variables']);
+        $this->variables = new VariableProvider($this);
 
-            $v = array();
-
-            foreach ($variables->getVariables() as $variable_key => $variable_value) {
-                $v["%".$variable_key.'%'] = $variable_value;
-            }
-
-            $this->variables = $v;
+        if (isset($options['replacements'])) {
+            $this->variables->rstore->load($options['replacements']);
         }
     }
 
@@ -208,7 +201,7 @@ class Vars extends AbstractResource
             'extensions',
             'loaders',
             'resources',
-            'variables',
+            'replacements',
         );
 
         $loaded_vars = get_object_vars($this->cache->getLoadedVars());
@@ -320,16 +313,6 @@ class Vars extends AbstractResource
     public function getResources()
     {
         return $this->resources;
-    }
-
-    /**
-     * Returns the Vars replacement variables
-     *
-     * @return array The Vars replacement variables
-     */
-    public function getVariables()
-    {
-        return $this->variables;
     }
 
     /**

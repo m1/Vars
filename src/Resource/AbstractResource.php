@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     0.3.0
+ * @version     1.0.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -122,8 +122,8 @@ abstract class AbstractResource implements \ArrayAccess
     /**
      * Object oriented set access for the array
      *
-     * @param $key The key to set the value for
-     * @param $value The value to set
+     * @param string $key The key to set the value for
+     * @param string $value The value to set
      */
     public function set($key, $value)
     {
@@ -203,5 +203,32 @@ abstract class AbstractResource implements \ArrayAccess
         }
 
         unset($array[array_shift($parts)]);
+    }
+
+    /**
+     * Port of array_key_exists to \ArrayAccess
+     *
+     * @param mixed $key The key to check if exists
+     *
+     * @return bool Does the key exist
+     */
+    public function arrayKeyExists($key)
+    {
+
+        if (array_key_exists($key, $this->content)) {
+            return true;
+        }
+
+        $parts = explode('.', $key);
+        $arr = $this->content;
+        foreach ($parts as $part) {
+            if (!is_array($arr) || !array_key_exists($part, $arr)) {
+                return false;
+            }
+
+            $arr = $arr[$part];
+        }
+
+        return true;
     }
 }

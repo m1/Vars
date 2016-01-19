@@ -6,10 +6,7 @@
 [![Build Status][ico-travis]][link-travis]
 [![Coverage Status][ico-scrutinizer]][link-scrutinizer]
 [![Quality Score][ico-code-quality]][link-code-quality]
-
-<!---
 [![Total Downloads][ico-downloads]][link-downloads]
---->
 
 Vars is a simple to use, lightweight and easily extendable configuration loader with built-in loaders for ENV, INI, JSON, PHP, Toml, XML and YAML file types. It also comes built-in support for Silex with more frameworks (Symfony, Laravel etc) to come soon.
 
@@ -27,7 +24,9 @@ Vars is a simple to use, lightweight and easily extendable configuration loader 
     * [Options](#options)
         * [Path](#base-path)
         * [Variables](#variables)
-        * [Environment Variables](#environment-variables)
+            * [Replacements](#replacement-variables)
+            * [In-file Variables](#in-file-variables)
+            * [Environment Variables](#environment-variables)
         * [Caching](#caching)
         * [Loaders](#loaders)
     * [Providers](#providers)
@@ -290,7 +289,7 @@ $vars = new Vars(__DIR__.'/config/config.yml', [
     'cache_expire' => 300,
 
     // Replacement variables -- see variables section for more detail
-    'variables' => [
+    'replacements' => [
         'foo' => 'bar',
         'foobar' => 'barfoo'
     ],
@@ -331,7 +330,24 @@ Will both use `__DIR__.'/config'` as the `path`
 
 #### Variables
 
-Variables enable you to do replacements in the resources, eg:
+You can use 3 types of variables in `Vars`: `Replacements`, `In-file` and `Environment`, the syntax is:
+
+| Variable Type  | Syntax |
+| ------------- | ------------- |
+| Replacements  | `%VARIABLE%`  |
+| In-file | `%$VARIABLE%`  |
+| Environment | `%^VARIABLE%`  |
+
+For better readability you can also put spaces between the variable name and the prefix/suffixes like so:
+```yml
+replacement_variable: % VARIABLE %
+infile_variable: %$ VARIABLE %
+env_variable: %^ VARIABLE %
+```
+
+##### Replacements
+
+Replacement variables are loaded from outside `Vars`, so it's often used for `PHP` functions/logic, such as `__dir__`: 
 ``` yml
 test_key_1: %foo%
 test_key_2: /bar/%foobar%/bar
@@ -339,7 +355,7 @@ test_key_2: /bar/%foobar%/bar
 
 ``` php
 $vars = new Vars(__DIR__.'/config/config.yml', [
-    'variables' => [
+    'replacements' => [
         'foo' => 'bar',
         'foobar' => 'barfoo'
     ],
@@ -350,7 +366,7 @@ Outputs:
 ``` php
 [
     "test_key_1" => "bar",
-    "test_key_2" => "/bar/foobar/"
+    "test_key_2" => "/bar/barfoo/foobar/"
 ]
 ```
 
@@ -359,17 +375,52 @@ Your replacements must be prefix and suffixed with `%`
 You can also load variables from files:
 ``` php
 $vars = new Vars(__DIR__.'/config/config.yml', [
-    'variables' => __DIR__.'/config/variables.yml'
+    'replacements' => __DIR__.'/config/variables.yml'
 ]);
 ```
 
-#### Environment Variables
+##### In-file Variables
+
+You can also use variables from your already defined keys in the files, such as:
+``` yml
+test_key_1: hello
+test_key_2: /bar/%$test_key_1%/bar
+```
+
+Outputs:
+``` php
+[
+    "test_key_1" => "bar",
+    "test_key_2" => "/bar/hello/foobar/"
+]
+```
+
+Your replacements must be prefix with `%$` and suffixed with `%`.
+
+For both `in-file` and `replacements`, you can use the dot notation syntax to get in arrays, e.g:
+``` yml
+test_key_1: 
+    test_key_2: hello
+test_key_3: /bar/%$test_key_1.test_key_2%/bar
+```
+
+Outputs:
+``` php
+[
+    "test_key_1" => array(
+        "test_key_2" => "hello"
+    ),
+    "test_key_2" => "/bar/hello/foobar/"
+]
+```
+
+##### Environment Variables
 
 You can also use environment variables to do replacements:
 
 ``` yml
-test_key_1: _ENV::DATABASE_USERNAME
-test_key_2: _ENV::DATABASE_PASSWORD
+test_key_1: %^DATABASE_USERNAME%
+test_key_2: %^DATABASE_PASSWORD%
 ```
 
 ``` nginx
@@ -393,7 +444,7 @@ Outputs:
 ]
 ```
 
-Your environment variables must be prefix with `_ENV::`
+Your environment variables must be prefix with `%^` and suffixed with `%`
 
 You can also make it so your config array is available to `getenv()`:
 
@@ -509,14 +560,14 @@ $app->register(new M1\Vars\Provider\Silex\VarsServiceProvider(__DIR__.'/../../ap
         'cache' => true,
         'cache_path' => __DIR__.'/../../app/config/cache/',
         'cache_expire' => 500,
-        'variables' => [
+        'replacements' => [
             'test' => 'test_replacement'
         ],
         'loaders' => [
             'yml',
             'json'
         ],
-        'variables' => __DIR__.'/../../app/config/replacements.json',
+        'replacements' => __DIR__.'/../../app/config/replacements.json',
     ]]);
 ```
 
@@ -533,8 +584,8 @@ test_key_3: value
 
 You can get the above using the dot notation like so:
 ```php
-$app['vars.test_key_1.test_key_2']; // value
-$app['vars.test_key_3']; // value
+$app['vars']['test_key_1.test_key_2']; // value
+$app['vars']['test_key_3']; // value
 ```
 
 ## Public API
@@ -561,7 +612,7 @@ $vars = new Vars(__DIR__.'/config/config.yml', [
     'cache_expire' => 300,
 
     // Replacement variables -- see variables section for more detail
-    'variables' => [
+    'replacements' => [
         'foo' => 'bar',
         'foobar' => 'barfoo'
     ],
