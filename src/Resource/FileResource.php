@@ -254,7 +254,7 @@ class FileResource extends AbstractResource
      *
      * @param array|string $import The import to create a resource from
      *
-     * @return array|\M1\Vars\Resource\ResourceProvider The resource of the import
+     * @return \M1\Vars\Resource\ResourceProvider The resource of the import
      */
     private function createResource($import)
     {
@@ -377,7 +377,7 @@ class FileResource extends AbstractResource
     /**
      * Returns the filename of the resource
      *
-     * @return mixed The filename
+     * @return string The filename
      */
     public function getFilename()
     {

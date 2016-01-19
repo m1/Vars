@@ -226,8 +226,6 @@ class ResourceProvider extends AbstractResource
     /**
      * Merges various configuration contents into one array
      *
-     * @param mixed $contents,... Optional number of arrays to merge
-     *
      * @return array The merged contents
      */
     private function mergeContents()

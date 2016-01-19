@@ -315,9 +315,9 @@ class Vars extends AbstractResource
     }
 
     /**
-     * Returns the CacheProvider if set, if not return false
+     * Returns the CacheProvider if set
      *
-     * @return \M1\Vars\Cache\CacheProvider|false The CacheProvider or false
+     * @return \M1\Vars\Cache\CacheProvider The CacheProvider
      */
     public function getCache()
     {

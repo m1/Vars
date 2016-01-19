@@ -58,7 +58,7 @@ class DirectoryLoader extends AbstractLoader
     /**
      * Returns the supported files in the directory recursively
      *
-     * @return array The supported files in the directories
+     * @return \RegexIterator The supported files in the directories
      */
     private function getSupportedFilesRecursively()
     {
@@ -76,7 +76,7 @@ class DirectoryLoader extends AbstractLoader
     /**
      * Returns the supported files in the directory
      *
-     * @return array The supported files in the directory
+     * @return \RegexIterator The supported files in the directory
      */
     private function getSupportedFiles()
     {

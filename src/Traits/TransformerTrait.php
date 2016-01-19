@@ -18,8 +18,6 @@
 
 namespace M1\Vars\Traits;
 
-use M1\Vars\Resource\InternalVariableResource;
-
 /**
  * Vars transformer class for to*() functions
  *
@@ -35,8 +33,10 @@ trait TransformerTrait
     {
         $dots = $this->toDots();
 
-        foreach ($dots as $dot_k => $dot_v) {
-            putenv(sprintf('%s=%s', $dot_k, $dot_v));
+        if (is_array($dots)) {
+            foreach ($dots as $dot_k => $dot_v) {
+                putenv(sprintf('%s=%s', $dot_k, $dot_v));
+            }
         }
     }
 

@@ -48,9 +48,9 @@ class VariableProvider
 
 
     /**
-     * The replacement store
+     * The types of variables
      *
-     * @var \M1\Vars\Variables\ReplacementStore $rstore
+     * @var array $variable_types
      */
     private static $variable_types = array('replacement', 'variable', 'env');
 
@@ -64,7 +64,7 @@ class VariableProvider
     /**
      * The variable store
      *
-     * @var \M1\Vars\Variables\ReplacementStore $vstore
+     * @var \M1\Vars\Variables\VariableStore $vstore
      */
     public $vstore;
 
@@ -75,7 +75,6 @@ class VariableProvider
      */
     public function __construct($vars)
     {
-        $this->vars = $vars;
         $this->vstore = new VariableStore();
         $this->rstore = new ReplacementStore($vars);
     }
