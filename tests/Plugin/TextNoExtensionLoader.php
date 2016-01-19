@@ -10,7 +10,6 @@ class TextNoExtensionLoader extends AbstractLoader
 
     public function load()
     {
-
         $content = [];
 
         foreach (file($this->file) as $line) {

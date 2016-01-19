@@ -964,7 +964,6 @@ class VarsTest extends \PHPUnit_Framework_TestCase
 
         $vars[null] = 'new_value_1';
         $this->assertEquals('new_value_1', $vars->getContent());
-
     }
 
     public function testDotNotationVarsSet()
