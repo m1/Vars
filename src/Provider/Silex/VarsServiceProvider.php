@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     1.0.0
+ * @version     1.1.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -46,7 +46,8 @@ class VarsServiceProvider implements ServiceProviderInterface
         'cache_path',
         'cache_expire',
         'loaders',
-        'replacements'
+        'replacements',
+        'merge_globals',
     );
 
     /**
@@ -69,6 +70,22 @@ class VarsServiceProvider implements ServiceProviderInterface
         $app['vars'] = function ($app) {
             return new Vars($this->entity, $this->createOptions($app));
         };
+
+        $app['vars.merge'] = $app->protect(function () use ($app) {
+            static $initialized = false;
+            if ($initialized) {
+                return;
+            }
+            $initialized = true;
+
+            foreach ($app['vars']->getGlobals() as $key => $value) {
+                $app[$key] = $value;
+            }
+
+            foreach ($app['vars']->toDots(false) as $key => $value) {
+                $app['vars.'.$key] = $value;
+            }
+        });
     }
 
     /**
@@ -88,6 +105,10 @@ class VarsServiceProvider implements ServiceProviderInterface
 
         if (isset($app['vars.options'])) {
             $options = $this->createKeyedOptions($options, $app['vars.options']);
+        }
+
+        if (!isset($options['merge_globals']) || is_null($options['merge_globals'])) {
+            $options['merge_globals'] = false;
         }
 
         if (isset($app['debug']) && $app['debug']) {

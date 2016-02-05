@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     1.0.0
+ * @version     1.1.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -25,7 +25,6 @@ namespace M1\Vars\Traits;
  */
 trait TransformerTrait
 {
-
     /**
      * Makes it so the content is available in getenv()
      */
@@ -43,28 +42,34 @@ trait TransformerTrait
     /**
      * Converts the array into a flat dot notation array
      *
+     * @param bool $flatten_array Flatten arrays into none existent keys
+     *
      * @return array The dot notation array
      */
-    public function toDots()
+    public function toDots($flatten_array = true)
     {
-        return (!is_null($this->content)) ? $this->dotTransformer($this->content) : $this->content;
+        return (!is_null($this->content)) ? $this->dotTransformer($this->content, $flatten_array) : $this->content;
     }
 
     /**
      * Converts the array into a flat dot notation array
      *
-     * @param array  $content The content array
-     * @param string $prefix  The prefix for the key
+     * @param array  $content       The content array
+     * @param bool   $flatten_array Flatten arrays into none existent keys
+     * @param string $prefix        The prefix for the key
      *
      * @return array The dot notation array
      */
-    private function dotTransformer($content, $prefix = '')
+    private function dotTransformer($content, $flatten_array, $prefix = '')
     {
         $parsed = array();
-
         foreach ($content as $arr_k => $arr_v) {
             if (is_array($arr_v)) {
-                $parsed = array_merge($parsed, $this->dotTransformer($arr_v, $prefix.$arr_k."."));
+                if (!$flatten_array) {
+                    $parsed[$prefix.$arr_k] = $arr_v;
+                }
+
+                $parsed = array_merge($parsed, $this->dotTransformer($arr_v, $flatten_array, $prefix.$arr_k."."));
             } else {
                 $parsed[$prefix.$arr_k] = $arr_v;
             }

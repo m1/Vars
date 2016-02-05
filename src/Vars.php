@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  *
  * @package     m1/vars
- * @version     1.0.0
+ * @version     1.1.0
  * @author      Miles Croxford <hello@milescroxford.com>
  * @copyright   Copyright (c) Miles Croxford <hello@milescroxford.com>
  * @license     http://github.com/m1/vars/blob/master/LICENSE
@@ -60,8 +60,16 @@ class Vars extends AbstractResource
         'cache' => true,
         'cache_path' => null,
         'cache_expire' => 300, // 5 minutes
-        'loaders' => array('env', 'ini', 'json', 'php', 'toml', 'yaml', 'xml',)
+        'loaders' => array('env', 'ini', 'json', 'php', 'toml', 'yaml', 'xml',),
+        'merge_globals' => true,
     );
+
+    /**
+     * The global file variables
+     *
+     * @var array globals
+     */
+    private $globals = array();
 
     /**
      * The loaderProvider for Vars supplies the file loaders and the extensions that are supported
@@ -113,8 +121,7 @@ class Vars extends AbstractResource
             $this->loadFromCache();
         } else {
             $resource->mergeParentContent();
-            $this->content = $resource->getContent();
-
+            $this->content = $this->mergeGlobals($resource->getContent(), $options);
             $this->cache->setTime(time());
             $this->cache->makeCache($this);
         }
@@ -130,7 +137,9 @@ class Vars extends AbstractResource
     private function parseOptions(array $options)
     {
         $parsed_options = array_merge($this->default_options, $options);
-        $parsed_options['loaders'] = (isset($options['loaders'])) ? $options['loaders'] : $this->default_options['loaders'];
+        $parsed_options['loaders'] = (isset($options['loaders'])) ?
+            $options['loaders'] : $this->default_options['loaders'];
+
         return $parsed_options;
     }
 
@@ -238,6 +247,30 @@ class Vars extends AbstractResource
         }
     }
 
+
+    /**
+     * Gets the _globals from the file and merges them if merge_globals is true
+     *
+     * @param array $content The unparsed content
+     * @param array $options  The options being used for Vars
+     *
+     * @return array $content The parsed content
+     */
+    private function mergeGlobals($content, $options)
+    {
+        if (array_key_exists('_globals', $content)) {
+            $this->globals = $content['_globals'];
+
+            if ($options['merge_globals']) {
+                $content = array_replace_recursive($content, $content['_globals']);
+            }
+
+            unset($content['_globals']);
+        }
+
+        return $content;
+    }
+
     /**
      * Adds a resource to $this->resources
      *
@@ -291,7 +324,7 @@ class Vars extends AbstractResource
      *
      * @param string $resource The resource to search for
      *
-     * @return bool Returns the resource if found
+     * @return \M1\Vars\Resource\FileResource|bool Returns the resource if found
      */
     public function getResource($resource)
     {
@@ -312,6 +345,16 @@ class Vars extends AbstractResource
     public function getResources()
     {
         return $this->resources;
+    }
+
+    /**
+     * Returns the imported resources
+     *
+     * @return array The Vars imported resources
+     */
+    public function getGlobals()
+    {
+        return $this->globals;
     }
 
     /**

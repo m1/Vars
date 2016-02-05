@@ -1015,6 +1015,40 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(isset($vars['test_key_1.test_key_2']));
     }
 
+    public function testGlobalsMerge()
+    {
+        $vars = new Vars(
+            __DIR__ . '/mocks/globals/globals.yml',
+            array(
+                'cache' => false,
+            )
+        );
+
+        $this->assertEquals($vars->getContent(), $this->basic_array);
+    }
+
+    public function testGlobalsMergeFalse()
+    {
+        $expected = array(
+            'test_key_2' => 'test_value_2'
+        );
+
+        $expected_globals = array(
+            'test_key_1' => 'test_value_1'
+        );
+
+        $vars = new Vars(
+            __DIR__ . '/mocks/globals/globals.yml',
+            array(
+                'cache' => false,
+                'merge_globals' => false
+            )
+        );
+
+        $this->assertEquals($vars->getContent(), $expected);
+        $this->assertEquals($vars->getGlobals(), $expected_globals);
+    }
+
     public function testBasicSilexServiceProvider()
     {
         $app = new \Silex\Application();
@@ -1062,6 +1096,21 @@ class VarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($cache_expire, $cache->getExpire());
 
         unlink(sprintf('%s/vars/%s', $cache_path, $cache_name));
+    }
+
+    public function testSilexGlobalsMerge()
+    {
+        $app = new \Silex\Application();
+
+        $app->register(new \M1\Vars\Provider\Silex\VarsServiceProvider(__DIR__ . '/mocks/globals/globals.yml'), array(
+            'vars.options' => array(
+                'cache' => false,
+            ),
+        ));
+        $app['vars.merge']();
+
+        $this->assertEquals('test_value_1', $app['test_key_1']);
+        $this->assertEquals('test_value_2', $app['vars.test_key_2']);
     }
 
     public function testDebugSilexServiceProvider()

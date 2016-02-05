@@ -59,7 +59,7 @@ Sometimes you're forced to use different formats for config files and one of Var
 by supporting the most common config formats so you don't have to switch libraries to deal with the different formats.
 
 Another aim is to support different frameworks so again you don't have to switch libraries when dealing with different frameworks.
-Currently only supporting Silex with support for Laravel and Symfony to follow shortly.
+Currently only supporting Silex using a service provider, support for Laravel and Symfony to follow shortly.
 
 With a simple API and intuitive loading options, Vars tries to make config loading and providing as easy as possible for you.
 
@@ -293,6 +293,9 @@ $vars = new Vars(__DIR__.'/config/config.yml', [
         'foo' => 'bar',
         'foobar' => 'barfoo'
     ],
+    
+    // Merge globals -- see globals section for more detail
+    'merge_globals' => true,
 
     // The file loaders to load the configs -- see loader section for more detail
     'loaders' => [
@@ -465,6 +468,38 @@ Will be accessed by:
 getenv('test_key_1.test_key_2'); // value
 ```
 
+#### Globals
+
+`Globals` in `Vars` refer to variables defined as such:
+
+```yaml
+_globals:
+    test_key_1: test_value_1
+```
+
+Basically they are just encapsulated in an `_globals` array -- the use of these are so you can access them from `getGlobals()` from `Vars`
+
+The default action is to merge them into the other file contents, so that:
+
+```yaml
+_globals:
+    test_key_1: test_value_1
+test_key_2: test_value_2
+```
+
+Becomes:
+```php
+[
+    'test_key_1' => 'test_value_1',
+    'test_key_2' => 'test_value_2',
+]
+```
+But you can override this by changing `merge_globals` to `false` via the options.
+
+If this doesn't make sense then you probably won't need to use globals at all, but they're useful for working with framesworks
+which encapsulate everything under say `$app` and you want to be able to access some key => values like so: `$app['test_key_1']`. 
+See the Silex provider section for more examples.
+
 #### Caching
 
 Vars automatically caches the resources for 5 minutes, you can turn this off by setting the `cache` option to `false`.
@@ -554,7 +589,7 @@ $vars = new Vars(__DIR__.'/config/config.yml', [
 
 It's pretty straightforward to use this library with Silex, just register it when you register other service providers:
 ```php
-$app->register(new M1\Vars\Provider\Silex\VarsServiceProvider(__DIR__.'/../../app/config/example.yml'), [
+$app->register(new M1\Vars\Provider\Silex\VarsServiceProvider('example.yml'), [
     'vars.path' => __DIR__.'/../../app/config/test/',
     'vars.options' => [
         'cache' => true,
@@ -567,6 +602,7 @@ $app->register(new M1\Vars\Provider\Silex\VarsServiceProvider(__DIR__.'/../../ap
             'yml',
             'json'
         ],
+        'merge_globals' => true,
         'replacements' => __DIR__.'/../../app/config/replacements.json',
     ]]);
 ```
@@ -587,6 +623,31 @@ You can get the above using the dot notation like so:
 $app['vars']['test_key_1.test_key_2']; // value
 $app['vars']['test_key_3']; // value
 ```
+
+You can also merge globals into `$app` like so:
+
+```yaml
+# example.yml
+_globals:
+    monolog.logfile: log.log
+test_key_1: test_value_2
+```
+
+```php
+$app->register(new M1\Vars\Provider\Silex\VarsServiceProvider('example.yml'));
+
+// register monolog here and other service providers
+
+$app['vars.merge']();
+```
+
+Note the `$app['vars.merge']()` -- This overrides the service provider defaults so in this example `monolog` will use 
+the log file defined in the vars config.
+
+You must call `vars.merge` after you've called the service providers you provide config values for in your config.
+
+You can also access `test_key_1` via `$app['vars.test_key_1']` and similary if you want, you can access globals like so
+`$app['monolog.logfile']`.
 
 ## Public API
 
@@ -694,6 +755,9 @@ $vars->toDots();
 # ]
 ```
 
+##### `getGlobals()`
+
+Gets the values defined in `_globals`
 
 ##### `set($key, $value)`
 Set a config key:

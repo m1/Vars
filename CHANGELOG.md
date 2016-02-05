@@ -2,6 +2,12 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 1.1.0 - 2016-02-05
+
+### Added
+- Support for `_globals`
+- Support to merge globals into `$app` for Silex
+
 ## 1.0.0 - 2016-01-19
 
 ### Added
