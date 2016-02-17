@@ -210,6 +210,7 @@ class Vars extends AbstractResource
             'loaders',
             'resources',
             'replacements',
+            'globals',
         );
 
         $loaded_vars = get_object_vars($this->cache->getLoadedVars());
@@ -224,7 +225,7 @@ class Vars extends AbstractResource
     }
 
     /**
-     * Checks if the base and cache paths have been set, if not set then will use the $resource as the base path
+     * Checks if the base and cache paths have been set, if not\ set then will use the $resource as the base path
      *
      * @param string $resource The resource to use to set the paths if they haven't been set
      */

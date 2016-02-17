@@ -2,6 +2,11 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 1.1.1 - 2016-02-17
+
+### Fixes
+- `_globals` are now cached
+
 ## 1.1.0 - 2016-02-05
 
 ### Added
