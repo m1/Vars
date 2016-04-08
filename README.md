@@ -804,7 +804,7 @@ $vars->getResource('example.yml')->getRawContent();
 
 
 ##### `getContent()`
-See [getContent()](#getcontent)
+See [getContent()](#getcontent) 
 
 
 ##### `get($key)`
