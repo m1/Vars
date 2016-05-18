@@ -2,6 +2,11 @@
 
 All Notable changes to `Vars` will be documented in this file
 
+## 1.1.2 - 2016-05-18
+
+### Altered
+- Support symfony/filesystem 3.x
+
 ## 1.1.1 - 2016-02-17
 
 ### Fixes
