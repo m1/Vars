@@ -3,8 +3,9 @@
 namespace M1\Vars\Test;
 
 use M1\Vars\Vars;
+use PHPUnit\Framework\TestCase;
 
-class VarsTest extends \PHPUnit_Framework_TestCase
+class VarsTest extends TestCase
 {
     public function setUp()
     {
@@ -475,7 +476,7 @@ class VarsTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertEquals([], $vars->getContent());
+        $this->assertEquals(array(), $vars->getContent());
     }
 
     public function testCustomLoaderString()
