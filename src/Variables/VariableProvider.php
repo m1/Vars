@@ -172,7 +172,7 @@ class VariableProvider
      */
     private function checkVariableExists($variable, $type)
     {
-        if (($type === 'env'         && !getenv($variable)) ||
+        if (($type === 'env'         && false === getenv($variable)) ||
             ($type === 'replacement' && !$this->rstore->arrayKeyExists($variable)) ||
             ($type === 'variable'    && !$this->vstore->arrayKeyExists($variable))
         ) {
