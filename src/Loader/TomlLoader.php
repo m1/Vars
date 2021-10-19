@@ -18,6 +18,8 @@
 
 namespace M1\Vars\Loader;
 
+use RuntimeException;
+use Throwable;
 use Yosymfony\Toml\Toml;
 
 /**
@@ -30,19 +32,19 @@ class TomlLoader extends AbstractLoader
     /**
      * {@inheritdoc}
      */
-    public static $supported = array('toml', 'tml');
+    public static array $supported = array('toml', 'tml');
 
     /**
      * {@inheritdoc}
      *
-     * @throws \RuntimeException If the `yosymfonytoml` library is not installed or the toml file is not valid
+     * @throws RuntimeException If the `yosymfonytoml` library is not installed or the toml file is not valid
      */
     public function load()
     {
         try {
             $this->content = Toml::parse($this->entity);
-        } catch (\Exception $e) {
-            throw new \RuntimeException(
+        } catch (Throwable $e) {
+            throw new RuntimeException(
                 sprintf("'%s' failed to load with the error '%s'", $this->entity, $e)
             );
         }

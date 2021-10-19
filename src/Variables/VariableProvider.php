@@ -18,6 +18,9 @@
 
 namespace M1\Vars\Variables;
 
+use InvalidArgumentException;
+use M1\Vars\Vars;
+
 /**
  * Vars variable file resource for getting replacement variables from files or arrays
  *
@@ -52,28 +55,28 @@ class VariableProvider
      *
      * @var array $variable_types
      */
-    private static $variable_types = array('replacement', 'variable', 'env');
+    private static array $variable_types = array('replacement', 'variable', 'env');
 
     /**
      * The replacement store
      *
-     * @var \M1\Vars\Variables\ReplacementStore $rstore
+     * @var ReplacementStore $rstore
      */
-    public $rstore;
+    public ReplacementStore $rstore;
 
     /**
      * The variable store
      *
-     * @var \M1\Vars\Variables\VariableStore $vstore
+     * @var VariableStore $vstore
      */
-    public $vstore;
+    public VariableStore $vstore;
 
     /**
      * Creates new instance of VariableProvider
      *
-     * @param \M1\Vars\Vars $vars Instance of the calling Vars
+     * @param Vars $vars Instance of the calling Vars
      */
-    public function __construct($vars)
+    public function __construct(Vars $vars)
     {
         $this->vstore = new VariableStore();
         $this->rstore = new ReplacementStore($vars);
@@ -86,7 +89,7 @@ class VariableProvider
      *
      * @return string The parsed variable
      */
-    public function parse($value)
+    public function parse(string $value): string
     {
         foreach (self::$variable_types as $variable_type) {
             $value = $this->typeParse($value, $variable_type);
@@ -103,7 +106,7 @@ class VariableProvider
      *
      * @return string The parsed variable
      */
-    private function typeParse($value, $type)
+    private function typeParse(string $value, string $type): string
     {
         $const_str = sprintf('REGEX_%s_SYNTAX', strtoupper($type));
         $regex = constant('\M1\Vars\Variables\VariableProvider::'.$const_str);
@@ -126,9 +129,9 @@ class VariableProvider
      * @param string $value The string to fetch matches for
      * @param string $regex The variable type regex
      *
-     * @return array The matches
+     * @return array|false
      */
-    private function fetchVariableMatches($value, $regex)
+    private function fetchVariableMatches(string $value, string $regex)
     {
         preg_match_all('/' . $regex . '/', $value, $matches);
 
@@ -147,7 +150,7 @@ class VariableProvider
      *
      * @return string The fetches value for the variable
      */
-    private function fetchVariable($variable_name, $type)
+    private function fetchVariable(string $variable_name, string $type): string
     {
         $this->checkVariableExists($variable_name, $type);
 
@@ -166,34 +169,33 @@ class VariableProvider
      * @param string $variable The variable to check
      * @param string $type     The variable type
      *
-     * @throws \InvalidArgumentException If the variable does not exist
+     * @return void Does the variable exist
+     *@throws InvalidArgumentException If the variable does not exist
      *
-     * @return bool Does the variable exist
      */
-    private function checkVariableExists($variable, $type)
+    private function checkVariableExists(string $variable, string $type): void
     {
         if (($type === 'env'         && !getenv($variable)) ||
             ($type === 'replacement' && !$this->rstore->arrayKeyExists($variable)) ||
             ($type === 'variable'    && !$this->vstore->arrayKeyExists($variable))
         ) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('Variable has not been defined as a `%s`: %s', $variable, $type)
             );
         }
 
-        return true;
     }
 
     /**
      * Does the replacements in the string for the variable
      *
      * @param string $value   The string to parse
-     * @param array  $matches The matches
+     * @param array $matches The matches
      * @param string $type    The variable type
      *
      * @return string The parsed variable
      */
-    public function doReplacements($value, $matches, $type)
+    public function doReplacements(string $value, array $matches, string $type): string
     {
         $replacements = array();
         for ($i = 0; $i <= (count($matches[0]) - 1); $i++) {

@@ -18,6 +18,8 @@
 
 namespace M1\Vars\Loader;
 
+use RuntimeException;
+
 /**
  * The XML file loader
  *
@@ -28,12 +30,12 @@ class XmlLoader extends AbstractLoader
     /**
      * {@inheritdoc}
      */
-    public static $supported = array('xml');
+    public static array $supported = array('xml');
 
     /**
      * {@inheritdoc}
      *
-     * @throws \RuntimeException If the xml file fails to load
+     * @throws RuntimeException If the xml file fails to load
      */
     public function load()
     {
@@ -41,7 +43,7 @@ class XmlLoader extends AbstractLoader
         $content = simplexml_load_file($this->entity);
 
         if (!$content) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf("'%s' failed to load with the error '%s'", $this->entity, libxml_get_errors()[0]->message)
             );
         }

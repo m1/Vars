@@ -20,6 +20,7 @@ namespace M1\Vars\Resource;
 
 use M1\Vars\Traits\FileTrait;
 use M1\Vars\Traits\ResourceFlagsTrait;
+use M1\Vars\Variables\VariableProvider;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -44,36 +45,36 @@ class FileResource extends AbstractResource
      *
      * @var string
      */
-    private $filename;
+    private string $filename;
 
     /**
      * The parent ResourceProvider
      *
-     * @var \M1\Vars\Resource\ResourceProvider
+     * @var ResourceProvider
      */
-    private $provider;
+    private ResourceProvider $provider;
 
     /**
      * The raw content from the passed file
      *
      * @var mixed
      */
-    private $raw_content = array();
+    private $raw_content;
 
     /**
      * The VariableProvider
      *
-     * @var \M1\Vars\Variables\VariableProvider
+     * @var VariableProvider
      */
-    private $variables;
+    private VariableProvider $variables;
 
     /**
      * The file resource constructor to get and parse the content from files
      *
-     * @param \M1\Vars\Resource\ResourceProvider $provider The parent ResourceProvider
-     * @param string                             $file     The passed file
+     * @param ResourceProvider $provider The parent ResourceProvider
+     * @param string $file     The passed file
      */
-    public function __construct(ResourceProvider $provider, $file)
+    public function __construct(ResourceProvider $provider, string $file)
     {
         $this->provider = $provider;
         $this->vars = $provider->vars;
@@ -97,7 +98,7 @@ class FileResource extends AbstractResource
      *
      * @param string $file The passed file
      */
-    private function makePaths($file)
+    private function makePaths(string $file)
     {
         $file = realpath($file);
 
@@ -121,7 +122,7 @@ class FileResource extends AbstractResource
      *
      * @return array Returns the parsed content
      */
-    private function searchForResources($content = array(), $prefix = '')
+    private function searchForResources($content = array(), string $prefix = ''): array
     {
         $returned_content = array();
 
@@ -138,14 +139,14 @@ class FileResource extends AbstractResource
      *
      * @param mixed  $key              The key of the content array
      * @param mixed  $value            The value of the key
-     * @param array  $returned_content The modified content array to return
+     * @param array $returned_content The modified content array to return
      * @param string $prefix           The array prefix for the entity
      *
      * @return array Returns the modified content array
      */
-    private function parseContent($key, $value, $returned_content, $prefix)
+    private function parseContent($key, $value, array $returned_content, string $prefix): array
     {
-        if ($key === 'imports' && !is_null($value) && !empty($value)) {
+        if ($key === 'imports' && !empty($value)) {
             $imported_resource = $this->useImports($value);
 
             if ($imported_resource) {
@@ -172,7 +173,7 @@ class FileResource extends AbstractResource
      *
      * @return string|null The parsed string
      */
-    private function parseText($text)
+    private function parseText(string $text): ?string
     {
         if (is_string($text)) {
             return $this->variables->parse($text);
@@ -188,7 +189,7 @@ class FileResource extends AbstractResource
      *
      * @return array The parsed imported resources
      */
-    private function useImports($imports)
+    private function useImports($imports): array
     {
         $imported_resources = array();
 
@@ -211,7 +212,7 @@ class FileResource extends AbstractResource
      *
      * @return array The parsed imported resources
      */
-    private function processImport($import, array $imported_resources)
+    private function processImport($import, array $imported_resources): array
     {
         if (is_array($import) && array_key_exists('resource', $import) && is_array($import['resource'])) {
             foreach ($import['resource'] as $resource) {
@@ -238,7 +239,7 @@ class FileResource extends AbstractResource
      *
      * @return array The imported resources
      */
-    private function import2Resource($import, array $imported_resources)
+    private function import2Resource($import, array $imported_resources): array
     {
         $resource = $this->createResource($import);
 
@@ -254,9 +255,9 @@ class FileResource extends AbstractResource
      *
      * @param array|string $import The import to create a resource from
      *
-     * @return \M1\Vars\Resource\ResourceProvider The resource of the import
+     * @return ResourceProvider The resource of the import
      */
-    private function createResource($import)
+    private function createResource($import): ResourceProvider
     {
         if (is_array($import) && array_key_exists('resource', $import)) {
             $import_resource = $import;
@@ -266,14 +267,12 @@ class FileResource extends AbstractResource
             $import_resource = array('resource' => $import, 'relative' => true, 'recursive' => true);
         }
 
-        $import_resource = new ResourceProvider(
-            $this->provider->vars,
-            $this->createImportName($import_resource['resource']),
+        return new ResourceProvider(
+            $this -> provider -> vars,
+            $this -> createImportName($import_resource['resource']),
             $import_resource['relative'],
             $import_resource['recursive']
         );
-
-        return $import_resource;
     }
 
     /**
@@ -283,11 +282,11 @@ class FileResource extends AbstractResource
      *
      * @return string The parsed resource
      */
-    private function createImportName($resource)
+    private function createImportName(string $resource): string
     {
         $resource = $this->explodeResourceIfElse($resource);
         $resource_pieces = array();
-        
+
         foreach ($resource as $r) {
             $parsed_r = $this->trimFlags($r);
             $parsed_r = sprintf('%s/%s', dirname($this->file), $parsed_r);
@@ -303,11 +302,11 @@ class FileResource extends AbstractResource
      * Import resource into the imported resources and merge contents
      *
      * @param ResourceProvider $provider The new imported resource
-     * @param array            $imported_resources The imported resources
+     * @param array $imported_resources The imported resources
      *
      * @return array The modified imported resources
      */
-    private function importResource(ResourceProvider $provider, $imported_resources)
+    private function importResource(ResourceProvider $provider, array $imported_resources): array
     {
         $content = $provider->getContent();
         $parent_content = $provider->getParentContent();
@@ -330,7 +329,7 @@ class FileResource extends AbstractResource
      *
      * @return bool Is the passed array associative
      */
-    private function isAssoc(array $array)
+    private function isAssoc(array $array): bool
     {
         return array_keys($array) !== range(0, count($array) - 1);
     }
@@ -343,7 +342,7 @@ class FileResource extends AbstractResource
      *
      * @return bool Returns the value of the boolean
      */
-    public function checkBooleanValue($value, $import)
+    public function checkBooleanValue(string $value, $import): bool
     {
         $default = false;
 
@@ -363,7 +362,7 @@ class FileResource extends AbstractResource
      *
      * @return bool Returns the value of the boolean
      */
-    private function getBooleanValue($value)
+    private function getBooleanValue(string $value): bool
     {
         $value = strtolower($value);
 
@@ -379,7 +378,7 @@ class FileResource extends AbstractResource
      *
      * @return string The filename
      */
-    public function getFilename()
+    public function getFilename(): string
     {
         return $this->filename;
     }

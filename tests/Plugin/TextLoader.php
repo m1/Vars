@@ -6,7 +6,7 @@ use M1\Vars\Loader\AbstractLoader;
 
 class TextLoader extends AbstractLoader
 {
-    public static $supported = array('txt');
+    public static array $supported = array('txt');
 
     public function load()
     {

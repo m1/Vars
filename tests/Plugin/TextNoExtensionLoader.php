@@ -6,7 +6,8 @@ use M1\Vars\Loader\AbstractLoader;
 
 class TextNoExtensionLoader extends AbstractLoader
 {
-    public static $supported = array();
+    public static array $supported = array();
+    private $file;
 
     public function load()
     {

@@ -37,21 +37,21 @@ abstract class AbstractLoader
      *
      * @var string
      */
-    protected $entity;
+    protected string $entity;
 
     /**
      * The supported extensions
      *
      * @var array
      */
-    public static $supported = array();
+    public static array $supported = array();
 
     /**
      * Construct the loader with the passed entity
      *
      * @param string $entity The passed entity
      */
-    public function __construct($entity)
+    public function __construct(string $entity)
     {
         $this->entity = $entity;
     }
@@ -68,7 +68,7 @@ abstract class AbstractLoader
      *
      * @return bool Does the loader support the file
      */
-    public function supports()
+    public function supports(): bool
     {
         $extension = pathinfo($this->entity, PATHINFO_EXTENSION);
         return in_array($extension, static::$supported);

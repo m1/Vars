@@ -11,13 +11,13 @@
         {
             "name": "Miles Croxford",
             "email": "hello@milescroxford.com",
-            "homepage": "http://milescroxford.com",
+            "homepage": "https://milescroxford.com",
             "role": "Developer"
         }
     ],
     "require": {
         "php" : ">=5.4.0",
-        "symfony/filesystem": "^2.8 | ^3.0"
+        "symfony/filesystem": "^5.3"
     },
     "require-dev": {
         "phpunit/phpunit" : "^4.8.36 || ^5.7 || ^6.5",
