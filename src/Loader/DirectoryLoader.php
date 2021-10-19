@@ -18,6 +18,11 @@
 
 namespace M1\Vars\Loader;
 
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RegexIterator;
+
 /**
  * This file provides dir loading support for Vars
  *
@@ -25,13 +30,15 @@ namespace M1\Vars\Loader;
  */
 class DirectoryLoader extends AbstractLoader
 {
+    private bool $recursive;
+
     /**
      * Construct the loader with the passed entity
      *
      * @param string $entity    The passed entity
-     * @param bool   $recursive Search the directories   recursively
+     * @param bool $recursive Search the directories   recursively
      */
-    public function __construct($entity, $recursive)
+    public function __construct($entity, bool $recursive)
     {
         parent::__construct($entity);
         $this->recursive = $recursive;
@@ -58,16 +65,16 @@ class DirectoryLoader extends AbstractLoader
     /**
      * Returns the supported files in the directory recursively
      *
-     * @return \RegexIterator The supported files in the directories
+     * @return RegexIterator The supported files in the directories
      */
-    private function getSupportedFilesRecursively()
+    private function getSupportedFilesRecursively(): RegexIterator
     {
-        $dir_it = new \RecursiveDirectoryIterator($this->entity, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $dir_it = new RecursiveDirectoryIterator($this->entity, FilesystemIterator::SKIP_DOTS);
 
-        $files = new \RecursiveIteratorIterator(
+        $files = new RecursiveIteratorIterator(
             $dir_it,
-            \RecursiveIteratorIterator::LEAVES_ONLY,
-            \RecursiveIteratorIterator::CATCH_GET_CHILD
+            RecursiveIteratorIterator::LEAVES_ONLY,
+            RecursiveIteratorIterator::CATCH_GET_CHILD
         );
 
         return $this->createRegexIterator($files);
@@ -76,9 +83,9 @@ class DirectoryLoader extends AbstractLoader
     /**
      * Returns the supported files in the directory
      *
-     * @return \RegexIterator The supported files in the directory
+     * @return RegexIterator The supported files in the directory
      */
-    private function getSupportedFiles()
+    private function getSupportedFiles(): RegexIterator
     {
         $files = new \FilesystemIterator($this->entity);
 
@@ -88,13 +95,13 @@ class DirectoryLoader extends AbstractLoader
     /**
      * Returns the supported files in the directory
      *
-     * @param \FilesystemIterator|\RecursiveIteratorIterator $files The found files in the directory/ies
+     * @param \FilesystemIterator|RecursiveIteratorIterator $files The found files in the directory/ies
      *
-     * @return \RegexIterator The supported files in the directory using the regexiterator
+     * @return RegexIterator The supported files in the directory using the regexiterator
      */
-    private function createRegexIterator($files)
+    private function createRegexIterator($files): RegexIterator
     {
-        return new \RegexIterator(
+        return new RegexIterator(
             $files,
             '/^.*\.(' . implode('|', static::$supported) . ')$/i'
         );
@@ -107,7 +114,7 @@ class DirectoryLoader extends AbstractLoader
      *
      * @return array|bool  The usable resources if any, else false
      */
-    private function makeResources($paths)
+    private function makeResources(array $paths)
     {
         if ($paths && !empty($paths)) {
             $resources = array();

@@ -38,7 +38,7 @@ class CacheProvider
      *
      * @var bool $attempted
      */
-    private $attempted = false;
+    private bool $attempted = false;
 
     /**
      * How long for the cache to be fresh
@@ -52,43 +52,43 @@ class CacheProvider
      *
      * @var bool $hit
      */
-    private $hit = false;
+    private bool $hit = false;
 
     /**
      * The loaded Vars object from cache
      *
-     * @var \M1\Vars\Vars $loaded_vars
+     * @var Vars $loaded_vars
      */
-    private $loaded_vars;
+    private Vars $loaded_vars;
 
     /**
      * The cache file name
      *
      * @var string $name
      */
-    private $name;
+    private string $name;
 
     /**
      * Is the cache turned on
      *
      * @var boolean $provide
      */
-    private $provide;
+    private bool $provide;
 
     /**
      * If cached, the time when the class was cached
      *
      * @var int $time
      */
-    private $time;
+    private int $time;
 
     /**
      * Creates a new instance of the cacheProvider for Vars
      *
      * @param string|array $resource The main configuration resource
-     * @param array        $options  The options being used for Vars
+     * @param array $options  The options being used for Vars
      */
-    public function __construct($resource, $options)
+    public function __construct($resource, array $options)
     {
         $this->setProvide($options['cache']);
         $this->setPath($options['cache_path'], true);
@@ -102,7 +102,7 @@ class CacheProvider
      *
      * @return bool Returns true if has the cached resource
      */
-    public function checkCache()
+    public function checkCache(): bool
     {
         if ($this->provide && $this->path && !$this->getAttempted()) {
             $file = sprintf('%s/vars/%s.php', $this->path, $this->name);
@@ -129,7 +129,7 @@ class CacheProvider
     /**
      * Transfer the contents of the parent Vars object into a file for cache
      *
-     * @param \M1\Vars\Vars $vars Parent vars object
+     * @param Vars $vars Parent vars object
      *
      * @codeCoverageIgnore
      */
@@ -151,7 +151,7 @@ class CacheProvider
      *
      * @return bool Is cache on or off
      */
-    public function getProvide()
+    public function getProvide(): bool
     {
         return $this->provide;
     }
@@ -161,9 +161,9 @@ class CacheProvider
      *
      * @param bool $provide Does the cache want to be on or off
      *
-     * @return \M1\Vars\Cache\CacheProvider
+     * @return CacheProvider
      */
-    public function setProvide($provide)
+    public function setProvide(bool $provide): CacheProvider
     {
         $this->provide = $provide;
         return $this;
@@ -174,7 +174,7 @@ class CacheProvider
      *
      * @return bool Has the cache been attempted
      */
-    public function getAttempted()
+    public function getAttempted(): bool
     {
         return $this->attempted;
     }
@@ -184,7 +184,7 @@ class CacheProvider
      *
      * @return int Cache expire time
      */
-    public function getExpire()
+    public function getExpire(): int
     {
         return $this->expire;
     }
@@ -192,7 +192,7 @@ class CacheProvider
     /**
      * Returns how long the cache lasts for
      *
-     * @return int Cache expire time
+     * @return bool Cache expire time
      */
     public function isHit()
     {
@@ -204,7 +204,7 @@ class CacheProvider
      *
      * @return int Cache creation time
      */
-    public function getTime()
+    public function getTime(): int
     {
         return $this->time;
     }
@@ -214,9 +214,9 @@ class CacheProvider
      *
      * @param int $time Time when vars cached was created
      *
-     * @return \M1\Vars\Cache\CacheProvider The cacheProvider object
+     * @return CacheProvider The cacheProvider object
      */
-    public function setTime($time)
+    public function setTime(int $time): CacheProvider
     {
         $this->time = $time;
         return $this;
@@ -225,9 +225,9 @@ class CacheProvider
     /**
      * Returns the loaded Vars object
      *
-     * @return \M1\Vars\Vars The loaded Vars object
+     * @return Vars The loaded Vars object
      */
-    public function getLoadedVars()
+    public function getLoadedVars(): Vars
     {
         return $this->loaded_vars;
     }

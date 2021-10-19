@@ -41,7 +41,7 @@ class VarsServiceProvider implements ServiceProviderInterface
      *
      * @var array
      */
-    private $option_keys = array(
+    private array $option_keys = array(
         'cache',
         'cache_path',
         'cache_expire',
@@ -63,7 +63,7 @@ class VarsServiceProvider implements ServiceProviderInterface
     /**
      * Registers the service provider, sets the user defined options and returns the vars instance
      *
-     * @param \Silex\Application $app The silex app
+     * @param Application $app The silex app
      */
     public function register(Application $app)
     {
@@ -91,11 +91,11 @@ class VarsServiceProvider implements ServiceProviderInterface
     /**
      * Creates the defined options into a way that Vars can use
      *
-     * @param \Silex\Application $app The silex app
+     * @param Application $app The silex app
      *
      * @return array The created options
      */
-    private function createOptions($app)
+    private function createOptions(Application $app): array
     {
         $options = array();
 
@@ -126,7 +126,7 @@ class VarsServiceProvider implements ServiceProviderInterface
      *
      * @return array The keyed options
      */
-    private function createKeyedOptions($options, $vars_options)
+    private function createKeyedOptions(array $options, array $vars_options): array
     {
         foreach ($this->option_keys as $option) {
             $options[$option] = (isset($vars_options[$option])) ? $vars_options[$option] : null;
@@ -138,7 +138,7 @@ class VarsServiceProvider implements ServiceProviderInterface
     /**
      * The silex service provider boot function
      *
-     * @param \Silex\Application $app The silex app
+     * @param Application $app The silex app
      *
      * @codeCoverageIgnore
      */

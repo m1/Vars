@@ -18,6 +18,9 @@
 
 namespace M1\Vars\Loader;
 
+use InvalidArgumentException;
+use RuntimeException;
+
 /**
  * This file provides the loaders and extensions supported by Vars
  *
@@ -30,22 +33,22 @@ class LoaderProvider
      *
      * @var array $extensions
      */
-    private $extensions = array();
+    private array $extensions = array();
 
     /**
      * The available loaders
      *
      * @var array $loaders
      */
-    private $loaders = array();
+    private array $loaders = array();
 
     /**
      * The constructor for LoaderProvider, makes the loaders and extensions
      *
      * @param array|null $options           The options being used for Vars
-     * @param array      $default_loaders   The default loaders for Vars
+     * @param array $default_loaders   The default loaders for Vars
      */
-    public function __construct($options, $default_loaders)
+    public function __construct(?array $options, array $default_loaders)
     {
         $this->makeLoaders($options, $default_loaders);
     }
@@ -54,9 +57,9 @@ class LoaderProvider
      * Get loaders and make extensions for the loaders
      *
      * @param array|null $options           The options being used for Vars
-     * @param array      $default_loaders   The default loaders for Vars
+     * @param array $default_loaders   The default loaders for Vars
      */
-    private function makeLoaders($options, $default_loaders)
+    private function makeLoaders(?array $options, array $default_loaders)
     {
         $loaders = $this->preParseLoaders($options, $default_loaders);
         $parsed_loaders = array();
@@ -79,11 +82,11 @@ class LoaderProvider
      * Pre parse the loaders for use in make loaders
      *
      * @param array|null $options           The options being used for Vars
-     * @param array      $default_loaders   The default loaders for Vars
+     * @param array $default_loaders   The default loaders for Vars
      *
      * @return array The pre parsed loaders
      */
-    private function preParseLoaders($options, $default_loaders)
+    private function preParseLoaders(?array $options, array $default_loaders): array
     {
         $loaders = array();
 
@@ -102,13 +105,13 @@ class LoaderProvider
      * Makes namespace loaders from loader strings
      *
      * @param array $loaders The options being used for Vars
-     * @param array      $default_loaders   The default loaders for Vars
-     *
-     * @throws \InvalidArgumentException If a loader from options isn't found
+     * @param array $default_loaders   The default loaders for Vars
      *
      * @return array The namespace loaders
+     *@throws InvalidArgumentException If a loader from options isn't found
+     *
      */
-    private function makeNameSpaceLoaders($loaders, $default_loaders)
+    private function makeNameSpaceLoaders(array $loaders, array $default_loaders): array
     {
         $parsed_loaders = array();
 
@@ -118,7 +121,7 @@ class LoaderProvider
             }
 
             if (!class_exists($loader)) {
-                throw new \InvalidArgumentException(sprintf("'%s' loader class does not exist", $loader));
+                throw new InvalidArgumentException(sprintf("'%s' loader class does not exist", $loader));
             }
 
             $parsed_loaders[] = $loader;
@@ -134,11 +137,11 @@ class LoaderProvider
      *
      * @param  array $loaders File loaders
      *
-     * @throws \RuntimeException If no loader extensions were found
+     * @throws RuntimeException If no loader extensions were found
      *
      * @return array File loader supported extensions
      */
-    private function makeExtensions(array $loaders)
+    private function makeExtensions(array $loaders): array
     {
         $extensions = array();
 
@@ -147,7 +150,7 @@ class LoaderProvider
         }
 
         if (empty($extensions)) {
-            throw new \RuntimeException('No loader extensions were found');
+            throw new RuntimeException('No loader extensions were found');
         }
 
         return $extensions;
@@ -158,7 +161,7 @@ class LoaderProvider
      *
      * @return array The Vars file loaders
      */
-    public function getLoaders()
+    public function getLoaders(): array
     {
         return $this->loaders;
     }
@@ -168,7 +171,7 @@ class LoaderProvider
      *
      * @return array The Vars file loader extensions
      */
-    public function getExtensions()
+    public function getExtensions(): array
     {
         return $this->extensions;
     }

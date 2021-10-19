@@ -18,7 +18,9 @@
 
 namespace M1\Vars\Loader;
 
+use RuntimeException;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 /**
  * The Yaml file loader
@@ -30,19 +32,19 @@ class YamlLoader extends AbstractLoader
     /**
      * {@inheritdoc}
      */
-    public static $supported = array('yaml', 'yml');
+    public static array $supported = array('yaml', 'yml');
 
     /**
      * {@inheritdoc}
      *
-     * @throws \RuntimeException If `symfony/yaml` library is not installed or the file can not be parsed
+     * @throws RuntimeException If `symfony/yaml` library is not installed or the file can not be parsed
      */
     public function load()
     {
         try {
             $this->content = Yaml::parse(file_get_contents($this->entity));
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf(
+        } catch (Throwable $e) {
+            throw new RuntimeException(sprintf(
                 "%s threw an exception: %s",
                 $this->entity,
                 $e

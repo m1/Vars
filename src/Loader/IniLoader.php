@@ -18,6 +18,9 @@
 
 namespace M1\Vars\Loader;
 
+use RuntimeException;
+use Throwable;
+
 /**
  * The ini file loader
  *
@@ -28,7 +31,7 @@ class IniLoader extends AbstractLoader
     /**
      * {@inheritdoc}
      */
-    public static $supported = array('ini');
+    public static array $supported = array('ini');
 
     /**
      * {@inheritdoc}
@@ -37,8 +40,8 @@ class IniLoader extends AbstractLoader
     {
         try {
             $this->content = parse_ini_file($this->entity, true);
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf(
+        } catch (Throwable $e) {
+            throw new RuntimeException(sprintf(
                 "%s threw an exception: %s",
                 $this->entity,
                 $e

@@ -18,19 +18,21 @@
 
 namespace M1\Vars\Resource;
 
+use ArrayAccess;
+
 /**
  * Abstract Resource enables normal and dot notation array access on resources
  *
  * @since 0.1.0
  */
-abstract class AbstractResource implements \ArrayAccess
+abstract class AbstractResource implements ArrayAccess
 {
     /**
      * The resource content
      *
      * @var array
      */
-    protected $content = array();
+    protected array $content = array();
 
     /**
      * Sets the resource contents
@@ -39,7 +41,7 @@ abstract class AbstractResource implements \ArrayAccess
      *
      * @return $this
      */
-    public function setContent($content)
+    public function setContent(array $content): AbstractResource
     {
         $this->content = $content;
         return $this;
@@ -50,7 +52,7 @@ abstract class AbstractResource implements \ArrayAccess
      *
      * @return array The content
      */
-    public function getContent()
+    public function getContent(): array
     {
         return $this->content;
     }
@@ -64,7 +66,7 @@ abstract class AbstractResource implements \ArrayAccess
      */
     public function offsetGet($key)
     {
-        return $this->internalGet($this->content, $key);
+        return $this->internalGet($this -> content, $key);
     }
 
     /**
@@ -76,7 +78,7 @@ abstract class AbstractResource implements \ArrayAccess
      */
     public function get($key)
     {
-        return $this->internalGet($this->content, $key);
+        return $this->internalGet($this -> content, $key);
     }
 
     /**
@@ -84,11 +86,11 @@ abstract class AbstractResource implements \ArrayAccess
      *
      * @param array $array  The array to use -- will always be $this->content
      * @param mixed $key    The key to find the value for
-     * @param bool  $exists Whether to return null or false dependant on the calling function
+     * @param bool $exists Whether to return null or false dependant on the calling function
      *
      * @return array|bool|null The resource key value
      */
-    private function internalGet(array $array, $key, $exists = false)
+    private function internalGet(array $array, $key, bool $exists)
     {
         if (isset($array[$key])) {
             return (!$exists) ? $array[$key] : true;
@@ -124,7 +126,7 @@ abstract class AbstractResource implements \ArrayAccess
      * @param string $key The key to set the value for
      * @param string $value The value to set
      */
-    public function set($key, $value)
+    public function set(string $key, string $value)
     {
         $this->internalSet($this->content, $key, $value);
     }
@@ -136,12 +138,13 @@ abstract class AbstractResource implements \ArrayAccess
      * @param mixed $key    The key to set the value for
      * @param mixed $value  The value to set
      *
-     * @return array Returns the modified array
+     * @return void Returns the modified array
      */
-    private function internalSet(array &$array, $key, $value)
+    private function internalSet(array &$array, $key, $value): void
     {
         if (is_null($key)) {
-            return $array = $value;
+            $array = $value;
+            return;
         }
 
         $keys = explode('.', $key);
@@ -158,7 +161,6 @@ abstract class AbstractResource implements \ArrayAccess
 
         $array[array_shift($keys)] = $value;
 
-        return $array;
     }
 
     /**
@@ -170,7 +172,7 @@ abstract class AbstractResource implements \ArrayAccess
      */
     public function offsetExists($key)
     {
-        return $this->internalGet($this->content, $key, true);
+        return $this->internalGet($this -> content, $key, true);
     }
 
     /**
@@ -211,7 +213,7 @@ abstract class AbstractResource implements \ArrayAccess
      *
      * @return bool Does the key exist
      */
-    public function arrayKeyExists($key)
+    public function arrayKeyExists($key): bool
     {
         if (array_key_exists($key, $this->content)) {
             return true;

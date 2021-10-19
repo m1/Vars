@@ -18,6 +18,7 @@
 
 namespace M1\Vars\Resource;
 
+use InvalidArgumentException;
 use M1\Vars\Loader\DirectoryLoader;
 use M1\Vars\Traits\ResourceFlagsTrait;
 use M1\Vars\Vars;
@@ -43,50 +44,50 @@ class ResourceProvider extends AbstractResource
      *
      * @var array
      */
-    private $parent_content = array();
+    private array $parent_content = array();
 
     /**
      * Are dirs wanting to be recursively searched
      *
      * @var bool
      */
-    private $recursive;
+    private bool $recursive;
 
     /**
      * Is the import relative
      *
      * @var bool
      */
-    private $relative;
+    private bool $relative;
 
     /**
      * Suppress file not found exceptions
      *
      * @var bool
      */
-    private $suppress_file_exceptions = false;
+    private bool $suppress_file_exceptions = false;
 
     /**
      * The parent Vars class
      *
-     * @var \M1\Vars\Vars
+     * @var Vars
      */
-    public $vars;
+    public Vars $vars;
 
     /**
      * The ResourceProvider constructor creates the content from the entity
      *
-     * @param \M1\Vars\Vars $vars      The calling Vars class
+     * @param Vars $vars      The calling Vars class
      * @param string|array  $entity    The configuration entity
-     * @param bool          $relative  Is the entity relative to the calling entity or class
-     * @param bool          $recursive If entity a dir, do you want to recursively check directories
+     * @param bool $relative  Is the entity relative to the calling entity or class
+     * @param bool $recursive If entity a dir, do you want to recursively check directories
      *
-     * @throws \InvalidArgumentException If the entity passed is not a string or array
+     * @throws InvalidArgumentException If the entity passed is not a string or array
      */
-    public function __construct(Vars $vars, $entity, $relative = true, $recursive = false)
+    public function __construct(Vars $vars, $entity, bool $relative = true, bool $recursive)
     {
         if (!is_string($entity) && !is_array($entity)) {
-            throw new \InvalidArgumentException('You can only pass strings or arrays as Resources');
+            throw new InvalidArgumentException('You can only pass strings or arrays as Resources');
         }
 
         $this->vars = $vars;
@@ -110,7 +111,7 @@ class ResourceProvider extends AbstractResource
      * @param array  $resources The array of resources
      * @param string $type      The type of the resource
      */
-    private function createResources(array $resources, $type)
+    private function createResources(array $resources, string $type)
     {
         foreach ($resources as $resource) {
             if ($type === "string") {
@@ -128,7 +129,7 @@ class ResourceProvider extends AbstractResource
                 $resource = new FileResource($this, $resource);
                 $this->vars->updateResource($resource, $pos);
             } else {
-                $resource = new ResourceProvider($this->vars, $resource);
+                $resource = new ResourceProvider($this -> vars, $resource);
             }
 
             $this->addContent($resource->getContent());
@@ -139,13 +140,13 @@ class ResourceProvider extends AbstractResource
      * Creates the content from the entity
      *
      * @param string|array $entity The configuration entity
-     * @param string       $type   The type of entity
+     * @param string $type   The type of entity
      *
-     * @throws \InvalidArgumentException If the entity is not array|file, is readable or exists
+     * @throws InvalidArgumentException If the entity is not array|file, is readable or exists
      *
      * @returns array The array of resources
      */
-    private function processEntity($entity, $type)
+    private function processEntity($entity, string $type)
     {
         $resources = $entity;
 
@@ -159,7 +160,7 @@ class ResourceProvider extends AbstractResource
             } elseif ($this->suppress_file_exceptions) {
                 $resources = false;
             } else {
-                throw new \InvalidArgumentException(sprintf("'%s' does not exist or is not readable", $entity));
+                throw new InvalidArgumentException(sprintf("'%s' does not exist or is not readable", $entity));
             }
         }
 
@@ -173,7 +174,7 @@ class ResourceProvider extends AbstractResource
      *
      * @returns string The parsed entity
      */
-    private function parseEntity($entity)
+    private function parseEntity(string $entity): string
     {
         $files = $this->explodeResourceIfElse($entity);
 
@@ -195,7 +196,7 @@ class ResourceProvider extends AbstractResource
      *
      * @param array $content The content from the resource
      */
-    private function addContent($content)
+    private function addContent(array $content)
     {
         if ($this->relative) {
             $this->content = $this->mergeContents($this->content, $content);
@@ -207,14 +208,14 @@ class ResourceProvider extends AbstractResource
     /**
      * Returns the supported files using the extensions from the loaders in the entity which is a directory
      *
-     * @see \M1\Vars\Loader\LoaderProvider::getExtensions() \M1\Vars\Loader\LoaderProvider::getExtensions()
-     * @see \M1\Vars\Loader\LoaderProvider::makeLoaders() \M1\Vars\Loader\LoaderProvider::makeLoaders()
-     *
      * @param string $entity The resource entity
      *
      * @return array|bool Returns the supported files or false if no files were found
+     *@see \M1\Vars\Loader\LoaderProvider::getExtensions() \M1\Vars\Loader\LoaderProvider::getExtensions()
+     * @see \M1\Vars\Loader\LoaderProvider::makeLoaders() \M1\Vars\Loader\LoaderProvider::makeLoaders()
+     *
      */
-    private function getSupportedFilesInDir($entity)
+    private function getSupportedFilesInDir(string $entity)
     {
         $dir_loader = new DirectoryLoader($entity, $this->recursive);
         $dir_loader->setSupports($this->vars->loader->getExtensions());
@@ -228,7 +229,7 @@ class ResourceProvider extends AbstractResource
      *
      * @return array The merged contents
      */
-    private function mergeContents()
+    private function mergeContents(): array
     {
         $contents = func_get_args();
         return call_user_func_array('array_replace_recursive', $contents);
@@ -247,9 +248,9 @@ class ResourceProvider extends AbstractResource
     /**
      * Merges the content and the parent content together
      *
-     * @return \M1\Vars\Resource\ResourceProvider
+     * @return ResourceProvider
      */
-    public function mergeParentContent()
+    public function mergeParentContent(): ResourceProvider
     {
         $this->content = $this->mergeContents($this->content, $this->parent_content);
 
@@ -259,7 +260,7 @@ class ResourceProvider extends AbstractResource
     /**
      * Returns the parent content
      *
-     * @return mixed The parent content
+     * @return array The parent content
      */
     public function getParentContent()
     {

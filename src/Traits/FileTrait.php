@@ -18,6 +18,12 @@
 
 namespace M1\Vars\Traits;
 
+use InvalidArgumentException;
+use InvalidArugmentException;
+use M1\Vars\Vars;
+use ReflectionClass;
+use RuntimeException;
+
 /**
  * File trait gives common operation functions needed for files in Vars
  *
@@ -30,32 +36,32 @@ trait FileTrait
      *
      * @var string
      */
-    private $file;
+    private string $file;
 
     /**
      * The parent Vars instance
      *
-     * @var \M1\Vars\Vars
+     * @var Vars
      */
-    private $vars;
+    private Vars $vars;
 
     /**
      * Validates the file passed to see if it is a file and is readable
      *
-     * @throws \RuntimeException If the file passed is not a file
-     * @throws \RuntimeException If the file passed is not readable
+     * @throws RuntimeException If the file passed is not a file
+     * @throws RuntimeException If the file passed is not readable
      */
     private function validate()
     {
         $file = $this->file;
 
         if (!is_file($file)) {
-            throw new \RuntimeException(sprintf("'%s' is not a file", $file));
+            throw new RuntimeException(sprintf("'%s' is not a file", $file));
         }
 
         if (!is_readable($file)) {
             // @codeCoverageIgnoreStart
-            throw new \RuntimeException(sprintf("'%s' is not a readable file", $file));
+            throw new RuntimeException(sprintf("'%s' is not a readable file", $file));
             // @codeCoverageIgnoreEnd
         }
     }
@@ -63,19 +69,27 @@ trait FileTrait
     /**
      * Gets the supported loader for the passed file
      *
-     * @see \M1\Vars\Vars::getLoaders() \M1\Vars\Vars::getLoaders()
-     *
      * @param string $data The passed file
      *
      * @return mixed Returns the loader class or false if no loader calls was found
+     * @throws \ReflectionException
+     * @throws \ReflectionException
+     * @see \M1\Vars\Vars::getLoaders() \M1\Vars\Vars::getLoaders()
+     *
      */
-    private function getSupportedLoader($data)
+    private function getSupportedLoader(string $data)
     {
         $loaders = $this->vars->loader->getLoaders();
 
         foreach ($loaders as $loader) {
-            $class_loader = new \ReflectionClass($loader);
-            $class_loader = $class_loader->newInstanceArgs(array($data));
+            try {
+                $class_loader = new ReflectionClass($loader);
+            } catch (\ReflectionException $e) {
+            }
+            try {
+                $class_loader = $class_loader -> newInstanceArgs(array($data));
+            } catch (\ReflectionException $e) {
+            }
 
             if ($class_loader->supports()) {
                 return $class_loader;
@@ -89,16 +103,16 @@ trait FileTrait
      *
      * @param string $data The passed file
      *
-     * @throws \InvalidArugmentException If the file passed is not supported by the current loaders
-     *
      * @return mixed The content from the file via the loader
+     *@throws InvalidArugmentException If the file passed is not supported by the current loaders
+     *
      */
-    private function loadContent($data)
+    private function loadContent(string $data)
     {
         $loader = $this->getSupportedLoader($data);
 
         if (!$loader) {
-            throw new \InvalidArgumentException(sprintf("'%s' is not supported by the current loaders", $this->file));
+            throw new InvalidArgumentException(sprintf("'%s' is not supported by the current loaders", $this->file));
         }
 
         $loader->load();
@@ -110,7 +124,7 @@ trait FileTrait
      *
      * @return string The passed file
      */
-    public function getFile()
+    public function getFile(): string
     {
         return $this->file;
     }

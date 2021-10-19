@@ -46,7 +46,7 @@ trait TransformerTrait
      *
      * @return array The dot notation array
      */
-    public function toDots($flatten_array = true)
+    public function toDots(bool $flatten_array = true): array
     {
         return (!is_null($this->content)) ? $this->dotTransformer($this->content, $flatten_array) : $this->content;
     }
@@ -54,13 +54,13 @@ trait TransformerTrait
     /**
      * Converts the array into a flat dot notation array
      *
-     * @param array  $content       The content array
-     * @param bool   $flatten_array Flatten arrays into none existent keys
+     * @param array $content       The content array
+     * @param bool $flatten_array Flatten arrays into none existent keys
      * @param string $prefix        The prefix for the key
      *
      * @return array The dot notation array
      */
-    private function dotTransformer($content, $flatten_array, $prefix = '')
+    private function dotTransformer(array $content, bool $flatten_array, string $prefix = ''): array
     {
         $parsed = array();
         foreach ($content as $arr_k => $arr_v) {

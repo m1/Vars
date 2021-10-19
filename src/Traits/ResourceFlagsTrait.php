@@ -32,7 +32,7 @@ trait ResourceFlagsTrait
      *
      * @return array The parsed resources
      */
-    protected function explodeResourceIfElse($resource)
+    protected function explodeResourceIfElse(string $resource): array
     {
         $resource = explode("?:", $resource, 2);
         $resources = array();
@@ -51,7 +51,7 @@ trait ResourceFlagsTrait
      *
      * @return string The parsed string resource
      */
-    protected function implodeResourceIfElse($resource)
+    protected function implodeResourceIfElse(array $resource): string
     {
         if (count($resource) > 1) {
             return implode(" ?: ", $resource);
@@ -67,23 +67,20 @@ trait ResourceFlagsTrait
      *
      * @return string The parsed string resource
      */
-    protected function trimFlags($resource)
+    protected function trimFlags(string $resource): string
     {
         $resource = trim($resource, '@');
-        $resource = trim($resource, '*');
-
-        return $resource;
+        return trim($resource, '*');
     }
 
     /**
      * Duplicates the flags from one string to another
      *
-     * @param string $resource The resource to add the flags to
      * @param string $resource The resource to duplicate the flags from
-     *
+     * @param $original_resource
      * @return string The parsed string resource
      */
-    protected function replicateFlags($resource, $original_resource)
+    protected function replicateFlags(string $resource, $original_resource): string
     {
         return sprintf(
             '%s%s%s',
@@ -100,7 +97,7 @@ trait ResourceFlagsTrait
      *
      * @return bool Is the recursive flag set
      */
-    private function checkRecursive($resource)
+    private function checkRecursive(string $resource): bool
     {
         return substr($resource, -1) === "*";
     }
@@ -112,7 +109,7 @@ trait ResourceFlagsTrait
      *
      * @return bool Is the exception suppressed
      */
-    private function checkSuppression($resource)
+    private function checkSuppression(string $resource): bool
     {
         return substr($resource, 0, 1) === "@";
     }
