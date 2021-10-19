@@ -18,6 +18,8 @@
 
 namespace M1\Vars\Loader;
 
+use RuntimeException;
+
 /**
  * The PHP file loader
  *
@@ -28,12 +30,12 @@ class PhpLoader extends AbstractLoader
     /**
      * {@inheritdoc}
      */
-    public static $supported = array('php', 'php5');
+    public static array $supported = array('php', 'php5');
 
     /**
      * {@inheritdoc}
      *
-     * @throws \RuntimeException If the php file doesn't return an array
+     * @throws RuntimeException If the php file doesn't return an array
      */
     public function load()
     {
@@ -44,7 +46,7 @@ class PhpLoader extends AbstractLoader
         }
 
         if (!is_array($content)) {
-            throw new \RuntimeException(sprintf("'%s' does not return an array", $this->entity));
+            throw new RuntimeException(sprintf("'%s' does not return an array", $this->entity));
         }
 
         $this->content = $content;

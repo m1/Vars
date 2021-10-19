@@ -18,7 +18,7 @@
 
 namespace M1\Vars\Variables;
 
-use \M1\Vars\Resource\AbstractResource;
+use M1\Vars\Resource\AbstractResource;
 
 /**
  * Stores the in-file variables
@@ -32,21 +32,21 @@ class VariableStore extends AbstractResource
      *
      * @var string $current_prefix
      */
-    private $current_prefix;
+    private string $current_prefix;
 
     /**
      * The relative prefix for the variable store
      *
      * @var string $path
      */
-    private $prefix;
+    private string $prefix;
 
     /**
      * Creates a relative prefix for the store
      *
      * @param bool $relative Is the prefix relative
      */
-    public function createPrefix($relative)
+    public function createPrefix(bool $relative)
     {
         if ($relative) {
             $this->prefix = (empty($this->current_prefix)) ? '' : $this->current_prefix;
@@ -64,7 +64,7 @@ class VariableStore extends AbstractResource
      *
      * @return string The new prefix
      */
-    public function createPrefixName($prefix, $key)
+    public function createPrefixName(string $prefix, string $key): string
     {
         return $prefix.$key.'.';
     }
@@ -74,7 +74,7 @@ class VariableStore extends AbstractResource
      *
      * @return string The prefix
      */
-    public function getPrefix()
+    public function getPrefix(): string
     {
         return $this->prefix;
     }
@@ -84,7 +84,7 @@ class VariableStore extends AbstractResource
      *
      * @param string $prefix The new prefix
      */
-    public function setCurrentPrefix($prefix)
+    public function setCurrentPrefix(string $prefix)
     {
         $this->current_prefix = $prefix;
     }

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 /**
  * This file is part of the m1\vars library
@@ -18,6 +18,9 @@
 
 namespace M1\Vars\Traits;
 
+use InvalidArgumentException;
+use M1\Vars\Vars;
+
 /**
  * Path trait gives common operation functions needed for Paths in Vars
  *
@@ -30,14 +33,14 @@ trait PathTrait
      *
      * @var string $path
      */
-    public $path;
+    public string $path;
 
     /**
      * Get the path
      *
      * @return string The path
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -45,21 +48,20 @@ trait PathTrait
     /**
      * Set the Vars base path
      *
-     * @param string  $path            The  path to set
+     * @param string $path            The  path to set
      * @param boolean $check_writeable Check whether dir is writeable
-
-     * @throws \InvalidArgumentException If the path does not exist or is not writable
+ * @return Vars|void
+     *@throws InvalidArgumentException If the path does not exist or is not writable
      *
-     * @return \M1\Vars\Vars
      */
-    public function setPath($path, $check_writeable = false)
+    public function setPath(string $path, bool $check_writeable): Vars
     {
         if (is_null($path)) {
             return;
         }
 
         if (!is_dir($path) || ($check_writeable && !is_writable($path))) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 "'%s' base path does not exist or is not writable",
                 $path
             ));

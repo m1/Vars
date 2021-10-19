@@ -19,6 +19,8 @@
 namespace M1\Vars\Loader;
 
 use M1\Env\Parser;
+use RuntimeException;
+use Throwable;
 
 /**
  * The Env file loader
@@ -30,19 +32,19 @@ class EnvLoader extends AbstractLoader
     /**
      * {@inheritdoc}
      */
-    public static $supported = array('env');
+    public static array $supported = array('env');
 
     /**
      * {@inheritdoc}
      *
-     * @throws \RuntimeException If `m1/env` library is not installed or the file can not be parsed
+     * @throws RuntimeException If `m1/env` library is not installed or the file can not be parsed
      */
     public function load()
     {
         try {
             $this->content = Parser::parse(file_get_contents($this->entity));
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf(
+        } catch (Throwable $e) {
+            throw new RuntimeException(sprintf(
                 "%s threw an exception: %s",
                 $this->entity,
                 $e

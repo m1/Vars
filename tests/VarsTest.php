@@ -2,11 +2,30 @@
 
 namespace M1\Vars\Test;
 
+use InvalidArgumentException;
+use M1\Vars\Provider\Silex\VarsServiceProvider;
+use M1\Vars\Test\Plugin\FakeFileResource;
 use M1\Vars\Vars;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use Silex\Application;
+use stdClass;
 
 class VarsTest extends TestCase
 {
+    /**
+     * @var string[]
+     */
+    private array $default_loaders_namespace;
+    /**
+     * @var string[]
+     */
+    private array $default_loaders;
+    /**
+     * @var string[]
+     */
+    private array $basic_array;
+
     public function setUp()
     {
         $this->basic_array = array(
@@ -1052,9 +1071,9 @@ class VarsTest extends TestCase
 
     public function testBasicSilexServiceProvider()
     {
-        $app = new \Silex\Application();
+        $app = new Application();
 
-        $app->register(new \M1\Vars\Provider\Silex\VarsServiceProvider(__DIR__ . '/mocks/basic/test_pass_1.yml'), array(
+        $app->register(new VarsServiceProvider(__DIR__ . '/mocks/basic/test_pass_1.yml'), array(
             'vars.options' => array(
                 'cache' => false,
             ),
@@ -1072,10 +1091,10 @@ class VarsTest extends TestCase
         $cache_path = __DIR__ . '/mocks/cache/output';
         $cache_expire = 1000;
 
-        $app = new \Silex\Application();
+        $app = new Application();
 
         $app->register(
-            new \M1\Vars\Provider\Silex\VarsServiceProvider($resource),
+            new VarsServiceProvider($resource),
             array(
                 'vars.path'    => $path,
                 'vars.options' => array(
@@ -1101,9 +1120,9 @@ class VarsTest extends TestCase
 
     public function testSilexGlobalsMerge()
     {
-        $app = new \Silex\Application();
+        $app = new Application();
 
-        $app->register(new \M1\Vars\Provider\Silex\VarsServiceProvider(__DIR__ . '/mocks/globals/globals.yml'), array(
+        $app->register(new VarsServiceProvider(__DIR__ . '/mocks/globals/globals.yml'), array(
             'vars.options' => array(
                 'cache' => false,
             ),
@@ -1118,11 +1137,11 @@ class VarsTest extends TestCase
     {
         $resource = __DIR__ . '/mocks/provider/test_1.yml';
 
-        $app = new \Silex\Application();
+        $app = new Application();
         $app['debug'] = true;
 
         $app->register(
-            new \M1\Vars\Provider\Silex\VarsServiceProvider($resource),
+            new VarsServiceProvider($resource),
             array()
         );
 
@@ -1151,19 +1170,15 @@ class VarsTest extends TestCase
         $this->assertEquals("value", getenv('test_key_4'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidResource()
     {
-        $vars = new Vars(new \stdClass());
+        $this -> expectException(InvalidArgumentException::class);
+        $vars = new Vars(new stdClass());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidLoader()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(__DIR__ . '/mocks/basic/test_pass_1.yml', array(
             'cache'   => false,
             'loaders' => 'Foo\Bar\FooBarLoader',
@@ -1172,11 +1187,9 @@ class VarsTest extends TestCase
         $this->assertEquals($this->basic_array, $vars->getContent());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testNoLoaderExtensions()
     {
+        $this -> expectException(RuntimeException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/loader/test.txt',
             array(
@@ -1186,11 +1199,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNoLoaderForExtension()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(__DIR__ . '/mocks/basic/test_pass_1.yml', array(
             'cache'   => false,
             'loaders' => array(
@@ -1199,12 +1210,9 @@ class VarsTest extends TestCase
         ));
     }
 
-    /**
-     *
-     * @expectedException \RuntimeException
-     */
     public function testBasicInvalidYML()
     {
+        $this -> expectException(RuntimeException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.yml',
             array(
@@ -1215,13 +1223,14 @@ class VarsTest extends TestCase
 
     /**
      * @requires PHP 5.5
-     * @expectedException \RuntimeException
+     *
      */
     public function testBasicInvalidIni()
     {
+        $this -> expectException(RuntimeException::class);
         // hack for hhvm
         if (defined('HHVM_VERSION')) {
-            throw new \RuntimeException();
+            throw new RuntimeException();
             return;
         }
 
@@ -1233,11 +1242,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testBasicInvalidXml()
     {
+        $this -> expectException(RuntimeException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.xml',
             array(
@@ -1246,11 +1253,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testBasicInvalidJson()
     {
+        $this -> expectException(RuntimeException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.json',
             array(
@@ -1259,11 +1264,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testBasicInvalidPhp()
     {
+        $this -> expectException(RuntimeException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.php',
             array(
@@ -1272,11 +1275,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testBasicInvalidToml()
     {
+        $this -> expectException(RuntimeException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.toml',
             array(
@@ -1285,11 +1286,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testBasicInvalidEnv()
     {
+        $this -> expectException(RuntimeException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/basic/test_fail_1.env',
             array(
@@ -1298,11 +1297,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNonexistentFile()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/FILE_NON_EXISTENT.php',
             array(
@@ -1311,11 +1308,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNonexistentImportedFile()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/FILE_NON_EXISTENT.php',
             array(
@@ -1324,11 +1319,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNonexistentImportedIfElseFile()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/importing/ifelse_5.yml',
             array(
@@ -1337,11 +1330,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNonexistentFolder()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/FOLDER_NON_EXISTENT/',
             array(
@@ -1350,11 +1341,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNoneExistentFolderImport()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/importing/dir_fail_1.yml',
             array(
@@ -1363,11 +1352,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNoneExistentBasePath()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/importing/dir_fail_1.yml',
             array(
@@ -1377,11 +1364,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNoneExistentCachePath()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/importing/dir_fail_1.yml',
             array(
@@ -1391,11 +1376,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testDoReplacementVariablesFromNonExistentFile()
     {
+        $this -> expectException(RuntimeException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/variables/basic_1.yml',
             array(
@@ -1405,11 +1388,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNonExistentVariable()
     {
+        $this -> expectException(InvalidArgumentException::class);
         $vars = new Vars(
             __DIR__ . '/mocks/variables/fail_1.yml',
             array(
@@ -1418,11 +1399,9 @@ class VarsTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testFileTraitValidate()
     {
-        $fake_file_resource = new \M1\Vars\Test\Plugin\FakeFileResource(__DIR__ . '/mocks/FAKE_FILE');
+        $this -> expectException(RuntimeException::class);
+        $fake_file_resource = new FakeFileResource(__DIR__ . '/mocks/FAKE_FILE');
     }
 }

@@ -21,6 +21,7 @@ namespace M1\Vars;
 use M1\Vars\Cache\CacheProvider;
 use M1\Vars\Loader\LoaderProvider;
 use M1\Vars\Resource\AbstractResource;
+use M1\Vars\Resource\FileResource;
 use M1\Vars\Resource\ResourceProvider;
 use M1\Vars\Traits\PathTrait;
 use M1\Vars\Traits\TransformerTrait;
@@ -46,16 +47,16 @@ class Vars extends AbstractResource
     /**
      * The cache object if the cache is wanted, else false
      *
-     * @var \M1\Vars\Cache\CacheProvider $cache
+     * @var CacheProvider $cache
      */
-    public $cache;
+    public CacheProvider $cache;
 
     /**
      * The default options for Vars
      *
      * @var array $default_options
      */
-    private $default_options = array(
+    private array $default_options = array(
         'path' => null,
         'cache' => true,
         'cache_path' => null,
@@ -69,43 +70,43 @@ class Vars extends AbstractResource
      *
      * @var array globals
      */
-    private $globals = array();
+    private array $globals = array();
 
     /**
      * The loaderProvider for Vars supplies the file loaders and the extensions that are supported
      *
-     * @var \M1\Vars\Loader\LoaderProvider $loader
+     * @var LoaderProvider $loader
      */
-    public $loader;
+    public LoaderProvider $loader;
 
     /**
      * Have the base and cache paths been set
      *
      * @var bool $paths_loaded
      */
-    private $paths_loaded = false;
+    private bool $paths_loaded = false;
 
     /**
      * The imported resources
      *
      * @var array $resources
      */
-    private $resources = array();
+    private array $resources = array();
 
     /**
      * The variable provider
      *
-     * @var \M1\Vars\Variables\VariableProvider $variables
+     * @var VariableProvider $variables
      */
-    public $variables;
+    public VariableProvider $variables;
 
     /**
      * Creates a new instance of Vars
      *
      * @param string|array $resource The main configuration resource
-     * @param array        $options  The options being used for Vars
+     * @param array $options  The options being used for Vars
      */
-    public function __construct($resource, $options = array())
+    public function __construct($resource, array $options = array())
     {
         $options = $this->parseOptions($options);
         $this->makeCache($options, $resource);
@@ -134,7 +135,7 @@ class Vars extends AbstractResource
      *
      * @return array The parsed options
      */
-    private function parseOptions(array $options)
+    private function parseOptions(array $options): array
     {
         $parsed_options = array_merge($this->default_options, $options);
         $parsed_options['loaders'] = (isset($options['loaders'])) ?
@@ -146,10 +147,10 @@ class Vars extends AbstractResource
     /**
      * Makes the CacheProvider with the options
      *
-     * @param array        $options  The options being used for Vars
+     * @param array $options  The options being used for Vars
      * @param array|string $resource The main configuration resource
      */
-    private function makeCache($options, $resource)
+    private function makeCache(array $options, $resource)
     {
         $cache = new CacheProvider($resource, $options);
         $this->cache = $cache;
@@ -161,7 +162,7 @@ class Vars extends AbstractResource
      *
      * @param array $options The options being used for Vars
      */
-    private function makePaths($options)
+    private function makePaths(array $options)
     {
         $this->setPath($options['path']);
 
@@ -176,7 +177,7 @@ class Vars extends AbstractResource
      *
      * @param array $options  The options being used for Vars
      */
-    private function makeLoader($options)
+    private function makeLoader(array $options)
     {
         $loader = new LoaderProvider($options, $this->default_options['loaders']);
         $this->loader = $loader;
@@ -187,7 +188,7 @@ class Vars extends AbstractResource
      *
      * @param array|null $options The options being used for Vars
      */
-    private function makeVariables($options)
+    private function makeVariables(?array $options)
     {
         $this->variables = new VariableProvider($this);
 
@@ -229,7 +230,7 @@ class Vars extends AbstractResource
      *
      * @param string $resource The resource to use to set the paths if they haven't been set
      */
-    public function pathsLoadedCheck($resource)
+    public function pathsLoadedCheck(string $resource)
     {
         if (!$this->paths_loaded) {
             $path = $this->getPath();
@@ -257,7 +258,7 @@ class Vars extends AbstractResource
      *
      * @return array $content The parsed content
      */
-    private function mergeGlobals($content, $options)
+    private function mergeGlobals(array $content, array $options): array
     {
         if (array_key_exists('_globals', $content)) {
             $this->globals = $content['_globals'];
@@ -279,7 +280,7 @@ class Vars extends AbstractResource
      *
      * @return int The position of the added resource
      */
-    public function addResource($resource)
+    public function addResource(string $resource): int
     {
         $r = realpath($resource);
         $pos = count($this->resources);
@@ -290,12 +291,12 @@ class Vars extends AbstractResource
     /**
      * Updates the string resource with the FileResource
      *
-     * @param \M1\Vars\Resource\FileResource $resource The FileResource to add
-     * @param int                            $pos      The position of the string resource
+     * @param FileResource $resource The FileResource to add
+     * @param int $pos      The position of the string resource
      *
-     * @return \M1\Vars\Vars
+     * @return Vars
      */
-    public function updateResource($resource, $pos)
+    public function updateResource(FileResource $resource, int $pos): Vars
     {
         $this->resources[$pos] = $resource;
         return $this;
@@ -304,11 +305,11 @@ class Vars extends AbstractResource
     /**
      * Tests to see if the resource has been imported already -- this is to avoid getting into a infinite loop
      *
-     * @param \M1\Vars\Resource\FileResource|string $resource Resource to check
+     * @param FileResource|string $resource Resource to check
      *
      * @return bool Has resource already been imported
      */
-    public function resourceImported($resource)
+    public function resourceImported($resource): bool
     {
         $resource = realpath($resource);
         foreach ($this->getResources() as $r) {
@@ -325,9 +326,9 @@ class Vars extends AbstractResource
      *
      * @param string $resource The resource to search for
      *
-     * @return \M1\Vars\Resource\FileResource|bool Returns the resource if found
+     * @return FileResource|bool Returns the resource if found
      */
-    public function getResource($resource)
+    public function getResource(string $resource)
     {
         foreach ($this->getResources() as $r) {
             if ($resource === $r->getFilename()) {
@@ -343,7 +344,7 @@ class Vars extends AbstractResource
      *
      * @return array The Vars imported resources
      */
-    public function getResources()
+    public function getResources(): array
     {
         return $this->resources;
     }
@@ -353,7 +354,7 @@ class Vars extends AbstractResource
      *
      * @return array The Vars imported resources
      */
-    public function getGlobals()
+    public function getGlobals(): array
     {
         return $this->globals;
     }
@@ -361,9 +362,9 @@ class Vars extends AbstractResource
     /**
      * Returns the CacheProvider if set
      *
-     * @return \M1\Vars\Cache\CacheProvider The CacheProvider
+     * @return CacheProvider The CacheProvider
      */
-    public function getCache()
+    public function getCache(): CacheProvider
     {
         return $this->cache;
     }

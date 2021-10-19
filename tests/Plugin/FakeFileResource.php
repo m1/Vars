@@ -8,7 +8,7 @@
 
 namespace M1\Vars\Test\Plugin;
 
-use \M1\Vars\Traits\FileTrait;
+use M1\Vars\Traits\FileTrait;
 
 class FakeFileResource
 {

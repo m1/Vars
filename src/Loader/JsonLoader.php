@@ -18,6 +18,9 @@
 
 namespace M1\Vars\Loader;
 
+use RunntimeException;
+use RuntimeException;
+
 /**
  * The json file loader
  *
@@ -28,12 +31,12 @@ class JsonLoader extends AbstractLoader
     /**
      * {@inheritdoc}
      */
-    public static $supported = array('json');
+    public static array $supported = array('json');
 
     /**
      * {@inheritdoc}
      *
-     * @throws \RunntimeException If the json file fails to load
+     * @throws RunntimeException If the json file fails to load
      */
     public function load()
     {
@@ -42,7 +45,7 @@ class JsonLoader extends AbstractLoader
         if (json_last_error() !== JSON_ERROR_NONE) {
             $message = function_exists('json_last_error_msg') ? json_last_error_msg() : 'Parse error';
 
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf("'%s' failed to load with the error '%s'", $this->entity, $message)
             );
         }
