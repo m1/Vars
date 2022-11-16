@@ -4,6 +4,7 @@
  * This file is part of the m1\vars library
  *
  * (c) m1 <hello@milescroxford.com>
+ * Contributor <gestech11@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -62,6 +63,7 @@ abstract class AbstractResource implements \ArrayAccess
      *
      * @return array|bool|null The resource key value
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         return $this->internalGet($this->content, $key);
@@ -104,7 +106,7 @@ abstract class AbstractResource implements \ArrayAccess
             $array = $array[$part];
         }
 
-        return (!$exists) ? $array : true;
+        return !$exists ? $array : true;
     }
 
     /**
@@ -113,7 +115,7 @@ abstract class AbstractResource implements \ArrayAccess
      * @param mixed $key The key to set the value for
      * @param mixed $value The value to set
      */
-    public function offsetSet($key, $value)
+    public function offsetSet($key, $value):void
     {
         $this->internalSet($this->content, $key, $value);
     }
@@ -168,7 +170,7 @@ abstract class AbstractResource implements \ArrayAccess
      *
      * @return bool Does the key exist
      */
-    public function offsetExists($key)
+    public function offsetExists($key):bool
     {
         return $this->internalGet($this->content, $key, true);
     }
@@ -178,7 +180,7 @@ abstract class AbstractResource implements \ArrayAccess
      *
      * @param mixed $key The key to unset
      */
-    public function offsetUnset($key)
+    public function offsetUnset($key):void
     {
         $this->internalUnset($this->content, $key);
     }
